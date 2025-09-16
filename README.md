@@ -10,6 +10,7 @@ A key component of our research is the comparison between traditional evaluation
 
 Ultimately, the goal of this research is to identify strengths and limitations in current LLM architectures regarding truthfulness, and to propose strategies for improving their reliability. The findings will contribute towards building safer, more trustworthy AI systems for widespread use.
 
-#Demo App (under const) 
+## Demo App (under const) 
 
 <img width="1422" height="1020" alt="image" src="https://github.com/user-attachments/assets/0b3676ee-86af-4b1b-8378-7651477d1298" />
+
