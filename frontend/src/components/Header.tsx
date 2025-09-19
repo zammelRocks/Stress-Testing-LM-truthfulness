@@ -13,7 +13,7 @@ export default function Header({ busy }: { busy: boolean }) {
           </div>
           <div>
             <h1 className="mb-0 fw-bold text-white">Judge Playground</h1>
-            <small className="text-light opacity-75">AI Model Evaluation Suite</small>
+            
           </div>
         </div>
         <div className="d-flex align-items-center">
