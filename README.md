@@ -2,6 +2,8 @@
 
 A lightweight, end-to-end stack for generating model outputs, computing classic text similarity metrics (BLEU/ROUGE/Cosine), and getting LLM-as-a-Judge scores — with a Django REST backend and a React (Vite) frontend.
 
+<img width="1882" height="1027" alt="image" src="https://github.com/user-attachments/assets/22c2e1b0-515d-4d3b-9b02-6346d6d4177a" />
+
 ---
 
 ## 1) Prerequisites
@@ -276,8 +278,4 @@ curl -X POST http://127.0.0.1:8000/api/evaluate/judge/ \
   -d '{"generation_id":33,"reference":"Golden leaves and crisp air—keep it 5/7/5.","judge_model":"mistral:7b"}'
 ```
 
----
-
-That’s it! You should now be able to run the backend, spin up the frontend UI, generate candidates, compute classic metrics, and obtain judge scores.
-<img width="5855" height="4892" alt="image" src="https://github.com/user-attachments/assets/a777d32c-a12a-466b-a4f8-ddd7fe3bb8e9" />
 
