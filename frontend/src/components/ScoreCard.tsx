@@ -1,61 +1,51 @@
-import React, { useMemo } from "react";
+function trimTrailingZeros(s: string) {
+  return s.replace(/0+$/g, "").replace(/\.$/, "");
+}
 
-type Props = {
+export default function ScoreCard({
+  label,
+  value,
+  icon,
+  emphasize,
+  max = 10,
+}: {
   label: string;
-  value: number | null;
-  icon?: string;   // e.g. "fas fa-code"
-  max?: number;    // default 1
-};
-
-function clamp01(x: number) {
-  if (Number.isNaN(x) || !Number.isFinite(x)) return 0;
-  return Math.max(0, Math.min(1, x));
-}
-
-function formatValue(v: number | null, max: number): string {
-  if (v === null || v === undefined) return "—";
-  // If max ≤ 1 we assume 0..1 metrics, show 3 dp
-  if (max <= 1) return v.toFixed(3);
-  // If max looks like 100, show 2 dp
-  if (max <= 100) return v.toFixed(2);
-  // Fallback
-  return v.toFixed(3);
-}
-
-export default function ScoreCard({ label, value, icon, max = 1 }: Props) {
-  const pct = useMemo(() => {
-    if (value === null || value === undefined || !Number.isFinite(value)) return 0;
-    const denom = max || 1;
-    return clamp01(value / denom);
-  }, [value, max]);
-
-  const display = formatValue(value ?? null, max);
-  const aria = value == null ? "No score yet" : `${label} ${display} of ${max}`;
+  value?: number | null;
+  icon: string;
+  emphasize?: boolean;
+  max?: number;
+}) {
+  const v = typeof value === "number" ? value : null;
+  const clamped = v === null ? 0 : Math.max(0, Math.min(max, v));
+  const percentage = v === null ? 0 : (clamped / max) * 100;
+  const scoreColor =
+    percentage >= 80 ? "success" : percentage >= 60 ? "warning" : percentage >= 40 ? "info" : "danger";
+  const display = v === null ? "–" : max === 1 ? trimTrailingZeros(v.toFixed(3)) : v.toFixed(1);
 
   return (
-    <div className="score-card" role="group" aria-label={aria}>
-      <div className="score-card__head">
-        <div className="score-card__label">
-          {icon ? <i className={`${icon} me-2`} aria-hidden="true" /> : null}
-          <span>{label}</span>
+    <div className={`ai-score-card ${emphasize ? "ai-score-card-emphasis" : ""}`}>
+      <div className="d-flex align-items-center mb-3">
+        <div className={`ai-score-icon me-2 ${emphasize ? "text-warning" : "text-light"}`}>
+          <i className={icon}></i>
         </div>
-        <div className="score-card__value" aria-live="polite">
-          {display}
-          {max > 1 ? <span className="score-card__unit"> / {max}</span> : null}
-        </div>
+        <small className="ai-score-label">{label}</small>
       </div>
 
-      <div className="score-card__bar" aria-hidden="true">
-        <div
-          className="score-card__bar-fill"
-          style={{ width: `${pct * 100}%` }}
-        />
+      <div className="ai-score-value mb-3">
+        <span className={`display-6 fw-bold ${emphasize ? "text-warning" : "text-light"}`}>{display}</span>
+        <small className="text-muted ms-1">/ {max}</small>
       </div>
 
-      {/* hint text for empty state */}
-      {value == null ? (
-        <div className="score-card__hint">Run evaluation to populate</div>
-      ) : null}
+      <div className="ai-progress-container">
+        <div className="ai-progress-bar">
+          <div
+            className={`ai-progress-fill ${emphasize ? "ai-progress-emphasis" : `ai-progress-${scoreColor}`}`}
+            style={{ width: `${percentage}%` }}
+          >
+            <div className="ai-progress-glow"></div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
