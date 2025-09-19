@@ -19,6 +19,12 @@ from .serializers import GenerateRequestSerializer, GenerateStreamRequestSeriali
 from .router import generate_for_model, stream_for_model
 from apps.inference.backends import OllamaBackend 
 
+from rest_framework.generics import ListAPIView, RetrieveAPIView
+from rest_framework.pagination import PageNumberPagination
+from rest_framework.filters import SearchFilter, OrderingFilter
+from apps.history.models import Generation  # adjust if needed
+from .serializers import GenerationSerializer
+
 logger = logging.getLogger(__name__)
 
 # History is optional: if the app/model isn't present yet, we just skip persisting.
@@ -155,3 +161,31 @@ class GenerateStreamView(APIView):
         resp["X-Accel-Buffering"] = "no"
         resp["Connection"] = "keep-alive"
         return resp
+
+class GenerationPagination(PageNumberPagination):
+    page_size = 20
+    page_size_query_param = "page_size"
+    max_page_size = 100
+
+
+class GenerationListView(ListAPIView):
+    """
+    GET /api/inference/generations/?search=haiku&ordering=-created_at&page=1&page_size=20
+    """
+    serializer_class = GenerationSerializer
+    pagination_class = GenerationPagination
+    filter_backends = [SearchFilter, OrderingFilter]
+    search_fields = ["prompt", "output", "model_slug"]
+    ordering_fields = ["created_at", "id"]
+    ordering = ["-created_at"]
+
+    def get_queryset(self):
+        return Generation.objects.all()
+
+
+class GenerationDetailView(RetrieveAPIView):
+    """
+    GET /api/inference/generations/<id>/
+    """
+    serializer_class = GenerationSerializer
+    queryset = Generation.objects.all()
