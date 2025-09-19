@@ -9,7 +9,6 @@ import CandidateEditor from "./components/CandidateEditor";
 import ClassicMetricsPanel from "./components/ClassicMetricsPanel";
 import JudgePanel from "./components/JudgePanel";
 import ScoreCard from "./components/ScoreCard";
-import GenerationLoader from "./components/GenerationLoader";
 
 import { api, ApiError } from "./api";
 import type { GenerationResp, MetricsResp } from "./types";

@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 type Props = {
-  generationId?: number ;
+  generationId?: number | null;
   reference: string;
   disabled?: boolean;
   busy?: boolean;
