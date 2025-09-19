@@ -279,3 +279,5 @@ curl -X POST http://127.0.0.1:8000/api/evaluate/judge/ \
 ---
 
 That’s it! You should now be able to run the backend, spin up the frontend UI, generate candidates, compute classic metrics, and obtain judge scores.
+<img width="5855" height="4892" alt="image" src="https://github.com/user-attachments/assets/a777d32c-a12a-466b-a4f8-ddd7fe3bb8e9" />
+
