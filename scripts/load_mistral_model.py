@@ -6,7 +6,7 @@ from apps.models_registry.models import HFModel, ModelBackend
 
 def run():
     HFModel.objects.update_or_create(
-        slug="mistral-7b-ollama",
+        slug="mistral:7b",
         defaults=dict(
             display_name="Mistral 7B (Ollama)",
             repo_id="mistral:7b",

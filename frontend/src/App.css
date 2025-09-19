@@ -400,3 +400,190 @@ body {
   color: #fca5a5 !important;
   backdrop-filter: blur(10px);
 }
+/*----------------------------------------------------------------------------------------*/
+/* ---- Theme tokens (lightly opinionated) ---- */
+:root {
+  --card-bg: rgba(18, 22, 33, 0.6);
+  --card-border: rgba(255, 255, 255, 0.06);
+  --soft-shadow: 0 10px 30px rgba(0,0,0,0.35);
+  --text-strong: #eaf1ff;
+  --text-dim: #9aa7b2;
+  --accent: #7c5cff;        /* gradient start */
+  --accent-2: #3cdfff;      /* gradient end */
+  --good: #22c55e;
+  --mid: #f59e0b;
+  --bad: #ef4444;
+}
+
+/* ---- Glass panel utility (optional use elsewhere) ---- */
+.panel {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 18px;
+  box-shadow: var(--soft-shadow);
+  backdrop-filter: blur(10px);
+}
+
+/* ---- Score card ---- */
+.score-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.01));
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 16px 18px;
+  box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+  position: relative;
+  overflow: hidden;
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+}
+
+.score-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(0,0,0,0.28);
+  border-color: rgba(255,255,255,0.12);
+}
+
+.score-card__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.score-card__label {
+  color: var(--text-dim);
+  letter-spacing: 0.3px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.92rem;
+  text-transform: uppercase;
+}
+
+.score-card__value {
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight:200;
+  color: var(--text-strong);
+  line-height: 1;
+}
+
+.score-card__unit {
+  font-size: 0.9rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  margin-left: 6px;
+}
+
+.score-card__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+  position: relative;
+}
+
+.score-card__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  box-shadow: 0 0 16px rgba(124,92,255,0.5);
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* subtle glow based on value (using width threshold via data attr would be ideal, but width is inline) */
+.score-card:hover .score-card__bar-fill {
+  box-shadow: 0 0 22px rgba(124,92,255,0.65);
+}
+
+.score-card__hint {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  opacity: 0.85;
+}
+
+/* Optional responsive grid helper for cards */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+@media (min-width: 992px) {
+  .metric-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+:root {
+  /* tweak to taste */
+  --panel-height: 520px;
+}
+
+@media (max-width: 1199.98px) {
+  /* on stacked layout, let panels be auto-height */
+  :root {
+    --panel-height: auto;
+  }
+}
+
+.panel-fixed {
+  height: var(--panel-height);
+  display: flex;
+  overflow: hidden;
+  border-radius: 18px; /* matches your panel style */
+}
+
+.panel-fixed > * {
+  flex: 1 1 auto;
+  min-height: 0;     /* enables child scrolling */
+  overflow: auto;    /* scroll inside instead of stretching the row */
+}
+
+/* optional: tidy 2×2 grid for metric cards */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+@media (min-width: 992px) {
+  .metric-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+ /*----------------------------------------------------------------------------------------*/
+ 
+
+.score-card__value {
+  display: block;                 /* value on next line */
+  font-size: clamp(1.35rem, 2.2vw, 1.8rem);
+  font-weight: 200;
+  color: var(--text-strong, #eaf1ff);
+  line-height: 1.1;
+  margin-bottom: 10px;           /* space before bar */
+}
+
+
+
+.score-card__bar {
+  height: 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  overflow: hidden;
+}
+
+.score-card__bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  width: 0%;
+  background: linear-gradient(90deg, var(--accent, #7c5cff), var(--accent-2, #3cdfff));
+  box-shadow: 0 0 16px rgba(124,92,255,0.5);
+  transition: width 420ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.score-card__hint {
+  margin-top: 10px;
+  font-size: 0.85rem;
+  color: var(--text-dim, #9aa7b2);
+  opacity: 0.85;
+}
