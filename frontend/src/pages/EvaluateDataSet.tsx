@@ -95,38 +95,30 @@ const EvaluateDataSet: React.FC = () => {
                   </div>
                 </div>
 
-                {data.sample?.length > 0 && (
-                  <div className="card mt-3">
-                    <div className="card-header">
-                      <h6 className="card-title mb-0">Sample Preview</h6>
-                    </div>
-                    <div className="card-body">
-                      <div className="table-responsive">
-                        <table className="table table-sm">
-                          <thead>
-                            <tr>
-                              <th>Claim</th>
-                              <th>Reference</th>
-                              <th>Label</th>
+                {data.sample.length > 0 && (
+                  <div className="cyber-panel">
+                    <h3 className="panel-title">Sample Preview</h3>
+                    <div className="cyber-table-wrapper">
+                      <table className="cyber-table">
+                        <thead>
+                          <tr>
+                            <th>Claim</th>
+                            <th>Reference</th>
+                            <th>Label</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {data.sample.map((row, idx) => (
+                            <tr key={idx}>
+                              <td>{row.claim || <em>—</em>}</td>
+                              <td>{row.reference || <em>—</em>}</td>
+                              <td>
+                                <span className="label-pill">{row.label || "None"}</span>
+                              </td>
                             </tr>
-                          </thead>
-                          <tbody>
-                            {data.sample.map((row, idx) => (
-                              <tr key={idx}>
-                                <td className="dataset-cell">
-                                  <div className="cell-content">{row.claim ?? <em>—</em>}</div>
-                                </td>
-                                <td className="dataset-cell">
-                                  <div className="cell-content">{row.reference ?? <em>—</em>}</div>
-                                </td>
-                                <td>
-                                  <span className="badge bg-secondary">{row.label ?? 'None'}</span>
-                                </td>
-                              </tr>
-                            ))}
-                          </tbody>
-                        </table>
-                      </div>
+                          ))}
+                        </tbody>
+                      </table>
                     </div>
                   </div>
                 )}

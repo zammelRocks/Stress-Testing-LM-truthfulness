@@ -392,6 +392,7 @@ body{
 
 /* Panel styling */
 .cyber-panel {
+  margin: 2rem 0;
   background: rgba(15, 23, 42, 0.75);
   border: 1px solid rgba(100, 116, 139, 0.4);
   border-radius: 1rem;
@@ -462,4 +463,50 @@ body{
 .btn-glow-secondary:hover {
   box-shadow: 0 0 15px var(--ai-secondary);
   transform: scale(1.05);
+}
+/* Table Styling */
+.cyber-table-wrapper {
+  overflow-x: auto;
+}
+
+.cyber-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: transparent; /* removes white background */
+  color: #e2e8f0;
+  font-size: 0.9rem;
+}
+
+.cyber-table th {
+  text-align: left;
+  padding: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--ai-primary);
+}
+
+.cyber-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cyber-table tr:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Label styling */
+.label-pill {
+  display: inline-block;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+}
+
+.text-muted {
+    --bs-text-opacity: 1;
+    color: pink !important;
 }

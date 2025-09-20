@@ -114,7 +114,7 @@ export default function AboutMe() {
                     Welcome to my digital realm. I'm Ons Zammel, Master Student, Grant Holder @FEUP and AI Engineer passionate about pushing 
                     the boundaries of Stress Testing Generative Models, machine learning applications and Focusing on Benchmarks Limitations. My journey began with curiosity 
                     about artificial intelligence and evolved into building systems that can think, learn, 
-                    and evaluate themselves. I cureently work as a Researcher Student Engineer where I Develop an automated stress testing the truthfulness
+                    and evaluate themselves. I currently work as a Researcher Student Engineer where I Develop an automated stress testing the truthfulness
                     for Base LLMs Framework and implement the product
                   </p>
                 </div>
