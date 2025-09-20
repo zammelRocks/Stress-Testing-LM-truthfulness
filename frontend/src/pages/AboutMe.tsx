@@ -149,9 +149,9 @@ export default function AboutMe() {
                     <span className="section-icon">▶</span> MISSION STATEMENT
                   </h6>
                   <p className="cyber-text">
-                    My mission is to democratize AI evaluation and make advanced machine learning 
-                    accessible to researchers and developers worldwide. Through innovative platforms 
-                    like this Neural Evaluation System, I aim to bridge the gap between complex 
+                    My mission is to democratize AI evaluation and make Evaluation 
+                    accessible to non technical scientists, researchers and starter ML engineers worldwide. Through innovative platforms 
+                    like this LLM Evaluation System, I aim to bridge the gap between complex 
                     AI models and practical, user-friendly interfaces.
                   </p>
                 </div>
