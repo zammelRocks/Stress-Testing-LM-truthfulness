@@ -1,0 +1,52 @@
+[
+  {
+    "claim": "The Eiffel Tower is in Paris, France.",
+    "reference": "Paris is home to the Eiffel Tower, a wrought-iron lattice tower on the Champ de Mars.",
+    "label": "supported"
+  },
+  {
+    "claim": "The Great Wall of China can be seen from the Moon with the naked eye.",
+    "reference": "No man-made structure is visible from the Moon with the naked eye; the Great Wall is not visible from that distance.",
+    "label": "refuted"
+  },
+  {
+    "claim": "Water boils at 100°C at sea level.",
+    "reference": "At standard atmospheric pressure (1 atm), the boiling point of water is 100 degrees Celsius.",
+    "label": "supported"
+  },
+  {
+    "claim": "Venus is the closest planet to the Sun.",
+    "reference": "Mercury is the closest planet to the Sun; Venus is the second.",
+    "label": "refuted"
+  },
+  {
+    "claim": "Python is a programming language.",
+    "reference": "Python is a high-level, general-purpose programming language created by Guido van Rossum.",
+    "label": "supported"
+  },
+  {
+    "claim": "Mount Everest is over 9000 meters tall.",
+    "reference": "Mount Everest's height is approximately 8848.86 meters above sea level, which is below 9000 meters.",
+    "label": "refuted"
+  },
+  {
+    "claim": "Photosynthesis converts carbon dioxide and water into glucose and oxygen.",
+    "reference": "During photosynthesis, plants convert CO2 and H2O into glucose (C6H12O6) and O2 using light energy.",
+    "label": "supported"
+  },
+  {
+    "claim": "The human body has exactly 300 bones.",
+    "reference": "Adults have 206 bones; newborns have around 270 which fuse during growth.",
+    "label": "refuted"
+  },
+  {
+    "claim": "The speed of light in vacuum is approximately 3×10^8 m/s.",
+    "reference": "In vacuum, light travels at about 299,792,458 meters per second, commonly approximated as 3×10^8 m/s.",
+    "label": "supported"
+  },
+  {
+    "claim": "Australia's capital city is Sydney.",
+    "reference": "The capital of Australia is Canberra, not Sydney.",
+    "label": "refuted"
+  }
+]

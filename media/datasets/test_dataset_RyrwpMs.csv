@@ -1,0 +1,11 @@
+claim,reference,label
+"The Eiffel Tower is in Paris, France.","Paris is home to the Eiffel Tower, a wrought-iron lattice tower on the Champ de Mars.",supported
+The Great Wall of China can be seen from the Moon with the naked eye.,No man-made structure is visible from the Moon with the naked eye; the Great Wall is not visible from that distance.,refuted
+Water boils at 100°C at sea level.,"At standard atmospheric pressure (1 atm), the boiling point of water is 100 degrees Celsius.",supported
+Venus is the closest planet to the Sun.,Mercury is the closest planet to the Sun; Venus is the second.,refuted
+Python is a programming language.,"Python is a high-level, general-purpose programming language created by Guido van Rossum.",supported
+Mount Everest is over 9000 meters tall.,"Mount Everest's height is approximately 8848.86 meters above sea level, which is below 9000 meters.",refuted
+Photosynthesis converts carbon dioxide and water into glucose and oxygen.,"During photosynthesis, plants convert CO2 and H2O into glucose (C6H12O6) and O2 using light energy.",supported
+The human body has exactly 300 bones.,Adults have 206 bones; newborns have around 270 which fuse during growth.,refuted
+The speed of light in vacuum is approximately 3×10^8 m/s.,"In vacuum, light travels at about 299,792,458 meters per second, commonly approximated as 3×10^8 m/s.",supported
+Australia's capital city is Sydney.,"The capital of Australia is Canberra, not Sydney.",refuted

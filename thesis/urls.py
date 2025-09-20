@@ -17,6 +17,8 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import RedirectView
+from django.conf import settings
+from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -25,4 +27,8 @@ urlpatterns = [
     path("api/models/", include("apps.models_registry.urls")),
     path("api/evaluate/", include("apps.eval.urls")),
     path("api/generate/", RedirectView.as_view(url="/api/inference/generate/", permanent=False)),
+    path("api/datasets/", include("apps.datasets.urls")),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

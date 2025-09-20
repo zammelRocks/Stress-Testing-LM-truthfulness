@@ -1,4 +1,3 @@
-// src/components/Footer.tsx
 import { API_BASE } from "../api";
 import { FaLinkedin, FaGithub } from "react-icons/fa";
 
@@ -15,7 +14,9 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="footer-link d-flex align-items-center me-3"
           >
-            <FaLinkedin className="me-1" size={18} />
+            <span className="me-1 d-flex align-items-center">
+              <FaLinkedin size={18} />
+            </span>
             <span>LINKEDIN</span>
           </a>
 
@@ -27,11 +28,18 @@ export default function Footer() {
             rel="noopener noreferrer"
             className="footer-link d-flex align-items-center ms-3"
           >
-            <FaGithub className="me-1" size={18} />
+            <span className="me-1 d-flex align-items-center">
+              <FaGithub size={18} />
+            </span>
             <span>GITHUB</span>
           </a>
         </div>
 
+        <div className="footer-subtitle">
+          <small className="text-muted d-block">
+            AI Model Evaluation Platform
+          </small>
+        </div>
 
         <div className="footer-api mt-1">
           <small className="text-light opacity-75">{API_BASE}</small>
