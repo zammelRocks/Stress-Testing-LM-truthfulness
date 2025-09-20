@@ -1,4 +1,4 @@
-# Judge Playground — Setup & Run Guide
+# LLM testing and benchmarks Playground — Setup & Run Guide
 
 A lightweight, end-to-end stack for generating model outputs, computing classic text similarity metrics (BLEU/ROUGE/Cosine), and getting LLM-as-a-Judge scores — with a Django REST backend and a React (Vite) frontend.
 # System Page : Home page
@@ -284,6 +284,7 @@ curl -X POST http://127.0.0.1:8000/api/evaluate/judge/ \
   -H "Content-Type: application/json" \
   -d '{"generation_id":33,"reference":"Golden leaves and crisp air—keep it 5/7/5.","judge_model":"mistral:7b"}'
 ```
+
 
 
 
