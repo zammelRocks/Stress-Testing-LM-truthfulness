@@ -8,17 +8,17 @@ from apps.models_registry.models import HFModel, ModelBackend
 
 def run():
     HFModel.objects.update_or_create(
-        slug="gemma3-4b-ollama",
+        slug="gpt-oss-20b-ollama",
         defaults=dict(
-            display_name="Gemma 3 4B (Ollama)",
-            repo_id="gemma3:4b",              # <-- Ollama model name
+            display_name="gpt-oss:20b(Ollama)",
+            repo_id="gpt-oss:20b",              # <-- Ollama model name
             backend=ModelBackend.OLLAMA,
             endpoint_url=None,
             default_params={"temperature": 0.7, "top_p": 0.9, "top_k": 50},
             is_active=True,
         ),
     )
-    print("Seeded Gemma 3 4B (Ollama).")
+    print("gpt-oss:20b(Ollama) model created or updated.")
 
 if __name__ == "__main__":
     run()
