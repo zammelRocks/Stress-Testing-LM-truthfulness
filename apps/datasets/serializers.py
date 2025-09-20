@@ -8,12 +8,12 @@ class DatasetRowSerializer(serializers.ModelSerializer):
 
 class DatasetSerializer(serializers.ModelSerializer):
     # Keep API name `created_at`, read from model field `uploaded_at`
-    created_at = serializers.DateTimeField(source="uploaded_at", read_only=True)
+    uploaded_at = serializers.DateTimeField(read_only=True)
 
     class Meta:
         model = Dataset
-        fields = ["id", "name", "file", "kind", "row_count", "created_at"]
-        read_only_fields = ("id", "row_count", "created_at")
+        fields = ["id", "name", "file", "kind", "row_count", "uploaded_at"]
+        read_only_fields = ("id", "row_count", "uploaded_at")
 
 class DatasetUploadResponseSerializer(serializers.Serializer):
     dataset = DatasetSerializer()
