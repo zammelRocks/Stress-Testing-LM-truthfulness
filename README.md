@@ -1,8 +1,14 @@
 # Judge Playground — Setup & Run Guide
 
 A lightweight, end-to-end stack for generating model outputs, computing classic text similarity metrics (BLEU/ROUGE/Cosine), and getting LLM-as-a-Judge scores — with a Django REST backend and a React (Vite) frontend.
+# System Page : Home page
+
 
 <img width="1900" height="1030" alt="image" src="https://github.com/user-attachments/assets/ca5eea3e-a735-4384-8974-26583bd85267" />
+
+
+# About Me Page : Let`´s Get in Touch
+<img width="1918" height="1032" alt="image" src="https://github.com/user-attachments/assets/47fa68fe-d574-4601-892a-aab94eaaa74e" />
 
 
 ---
@@ -278,6 +284,7 @@ curl -X POST http://127.0.0.1:8000/api/evaluate/judge/ \
   -H "Content-Type: application/json" \
   -d '{"generation_id":33,"reference":"Golden leaves and crisp air—keep it 5/7/5.","judge_model":"mistral:7b"}'
 ```
+
 
 
 
