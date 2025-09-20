@@ -52,3 +52,20 @@ export function normalizeGeneration(gen: BackendGenerationResp | GenerationResp)
     created_at: gen.created_at
   };
 }
+
+export type DatasetKind = 'csv' | 'json' | 'jsonl' | 'ndjson';
+
+export interface DatasetUploadResponse {
+  dataset: {
+    name: string;
+    kind: DatasetKind;
+    row_count: number;
+    uploaded_at: string;
+  };
+  inserted: number;
+  sample: Array<{
+    claim?: string;
+    reference?: string;
+    label?: string;
+  }>;
+}

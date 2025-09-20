@@ -1,5 +1,6 @@
 // src/api.ts - Corrected API client for Django backend
 import type { GenerationResp, MetricsResp, JudgeScores, BackendGenerationResp } from "./types";
+import type { DatasetUploadResponse } from "./types"; 
 
 export const API_BASE =
   (import.meta as any)?.env?.VITE_API_BASE_URL || "http://127.0.0.1:8000";
@@ -328,4 +329,48 @@ export const api = {
 
     return { generationId, generation, metrics, judge };
   },
+
+  /** -------- Dataset ingestion -------- */uploadDataset: async (file: File, name?: string): Promise<DatasetUploadResponse> => {
+    const form = new FormData();
+    form.append("file", file);
+    if (name) form.append("name", name);
+
+    const url = `${API_BASE}/api/datasets/upload/`;
+    console.log("[api][uploadDataset][POST]", url, file.name);
+
+    const res = await fetch(url, { method: "POST", body: form });
+    const text = await res.text();
+    console.log("[api][uploadDataset][status]", res.status, res.statusText);
+
+    let json: any;
+    try {
+      json = text ? JSON.parse(text) : undefined;
+    } catch (e) {
+      console.error("[api][uploadDataset] JSON parse error:", e);
+      throw new ApiError(res.status, text, null, "Invalid JSON response");
+    }
+
+    if (!res.ok) {
+      const msg = json?.detail || json?.error || res.statusText || text;
+      throw new ApiError(res.status, text, json, msg);
+    }
+
+    return json as DatasetUploadResponse;
+  },
+
+  /** GET /api/datasets/ */
+  listDatasets: () => get(`${API_BASE}/api/datasets/`),
+
+  /** GET /api/datasets/<id>/ */
+  getDataset: (id: number) => get(`${API_BASE}/api/datasets/${id}/`),
+
+  /** GET /api/datasets/<id>/rows/ */
+  getDatasetRows: (id: number, params?: { limit?: number; offset?: number }) =>
+    get(`${API_BASE}/api/datasets/${id}/rows/`, params),
 };
+
+
+  
+
+
+

@@ -45,6 +45,10 @@ export default function Header({ busy }: { busy: boolean }) {
             <i className="fas fa-user me-1"></i>
             <span>ABOUT</span>
           </Link>
+          <Link to="/EvaluateDataSet" className="cyber-nav-link">
+            <i className="fas fa-user me-1"></i>
+            <span>Evaluation</span>
+          </Link>
         </div>
       </div>
       
