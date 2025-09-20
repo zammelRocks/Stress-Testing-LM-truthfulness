@@ -138,6 +138,7 @@ export default function AboutMe() {
                     <span className="skill-tag">Hadoop</span>
                     <span className="skill-tag">HDFS</span>
                     <span className="skill-tag">ETL</span>
+                    <span className="skill-tag">Pyspark</span>
                     <span className="skill-tag">PowerBI</span>
                     <span className="skill-tag">Jupyter Notebooks</span>
                     <span className="skill-tag">Stats and Linear Algebra</span>
@@ -322,9 +323,7 @@ export default function AboutMe() {
                 <span className="logo-text"> ZammelRocks </span>
                 
               </div>
-              <div className="footer-subtitle">
-                <small className="text-muted">Building the future, one neural network at a time</small>
-              </div>
+              
             </div>
           </div>
           <div className="footer-glitch"></div>

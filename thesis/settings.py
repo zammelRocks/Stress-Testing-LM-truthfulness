@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 
 from pathlib import Path
 import os
+
 HUGGINGFACE_TOKEN = os.getenv("HUGGINGFACE_TOKEN","") or os.getenv("HF_TOKEN","")
 HF_ROUTER_BASE_URL = os.getenv("HF_ROUTER_BASE_URL","https://router.huggingface.co/v1")
 OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
@@ -19,9 +20,13 @@ DEFAULT_MAX_NEW_TOKENS = int(os.getenv("DEFAULT_MAX_NEW_TOKENS","256"))
 ABSOLUTE_MAX_NEW_TOKENS = 1024
 REQUEST_TIMEOUT_SECS = 120
 STREAM_TIMEOUT_SECS = 300
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+MEDIA_URL = "/media/"
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+# Build paths inside the project like this: BASE_DIR / 'subdir'.
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
@@ -54,6 +59,7 @@ INSTALLED_APPS = [
     "apps.history",
     "apps.eval",
     "apps.users",
+    "apps.datasets",
     "corsheaders",
 ]
 

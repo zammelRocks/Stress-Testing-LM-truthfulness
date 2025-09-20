@@ -1,5 +1,5 @@
 // src/api.ts - Corrected API client for Django backend
-import type { GenerationResp, MetricsResp, JudgeScores, BackendGenerationResp, normalizeGeneration } from "./types";
+import type { GenerationResp, MetricsResp, JudgeScores, BackendGenerationResp } from "./types";
 
 export const API_BASE =
   (import.meta as any)?.env?.VITE_API_BASE_URL || "http://127.0.0.1:8000";
