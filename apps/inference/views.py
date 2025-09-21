@@ -4,7 +4,7 @@ from __future__ import annotations
 import json
 import logging
 from typing import Generator, Optional
-
+import re
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
@@ -24,6 +24,12 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework.filters import SearchFilter, OrderingFilter
 from apps.history.models import Generation  # adjust if needed
 from .serializers import GenerationSerializer
+from .serializers import (
+    GenerateRequestSerializer, GenerateStreamRequestSerializer,
+    LabelRequestSerializer, LabelResultSerializer
+)
+from django.shortcuts import get_object_or_404
+from apps.models_registry.models import HFModel, ModelBackend
 
 logger = logging.getLogger(__name__)
 
@@ -189,3 +195,139 @@ class GenerationDetailView(RetrieveAPIView):
     """
     serializer_class = GenerationSerializer
     queryset = Generation.objects.all()
+
+# datasets evaluation 
+
+def _normalize_label(s: str) -> Optional[str]:
+    if not s:
+        return None
+    t = s.strip().lower()
+    pos = {"accepted", "support", "supported", "true", "yes", "correct"}
+    neg = {"refuted", "reject", "rejected", "false", "no", "incorrect", "not supported"}
+    if t in pos: return "Accepted"
+    if t in neg: return "Refuted"
+    if any(k in t for k in ["refut", "false", "not supported", "incorrect"]): return "Refuted"
+    if any(k in t for k in ["accept", "support", "true", "correct", "supported"]): return "Accepted"
+    return None
+
+def _extract_label_and_justification(text: str) -> tuple[Optional[str], str]:
+    if not text:
+        return None, ""
+    # try JSON
+    try:
+        j = json.loads(text)
+        if isinstance(j, dict):
+            lab = _normalize_label(j.get("label", ""))
+            just = (j.get("justification", "") or "").strip()
+            if lab:
+                return lab, just
+    except Exception:
+        pass
+    # try "Label: ...", "Justification: ..."
+    m_lab = re.search(r"label\s*[:\-]\s*(.+)", text, re.I)
+    m_jus = re.search(r"(justification|reason|because)\s*[:\-]\s*(.+)", text, re.I)
+    lab2 = _normalize_label(m_lab.group(1)) if m_lab else None
+    jus2 = (m_jus.group(2).strip() if m_jus else "").strip()
+    if lab2:
+        return lab2, jus2
+    # heuristic: first sentence verdict + rest as reason
+    parts = re.split(r"(?<=[\.\!\?])\s+", text.strip(), maxsplit=1)
+    lab3 = _normalize_label(parts[0])
+    jus3 = (parts[1] if len(parts) > 1 else text).strip()
+    return lab3, jus3[:500]
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class LabelClaimView(APIView):
+    """
+    POST /api/inference/label/
+    Body: { "claim": "...", "model_slug": "optional", "params": {...} }
+    """
+
+    MAX_JUST_LEN = 500  # keep UI tidy
+
+    def post(self, request):
+        # 1) Validate request
+        s = LabelRequestSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        claim: str = s.validated_data["claim"]
+        model_slug: Optional[str] = s.validated_data.get("model_slug")
+        params: dict = s.validated_data.get("params") or {}
+
+        # 2) Resolve model (OLLAMA only)
+        if model_slug:
+            model = get_object_or_404(
+                HFModel, slug=model_slug, is_active=True, backend=ModelBackend.OLLAMA
+            )
+        else:
+            model = (
+                HFModel.objects.filter(is_active=True, backend=ModelBackend.OLLAMA)
+                .order_by("id")
+                .first()
+            )
+            if not model:
+                return Response(
+                    {"error": "no_active_model", "detail": "No active OLLAMA model available."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        # 3) Build prompt (JSON-only response for robust parsing)
+        prompt = (
+            "You are a binary fact checker. Given a CLAIM, decide if it is Accepted or Refuted, "
+            "and provide a BRIEF justification grounded in general knowledge.\n\n"
+            f"CLAIM: {claim}\n\n"
+            "Respond in JSON ONLY with keys: "
+            'label (Accepted|Refuted), justification (<= 2 sentences).'
+        )
+
+        # 4) Call model
+        try:
+            result = generate_for_model(model, prompt, params)  # returns GenResult(text, latency_ms)
+        except Exception as e:
+            logger.exception("inference failed (model=%s)", getattr(model, "slug", "?"))
+            return Response(
+                {"error": "inference_failed", "detail": str(e)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        # 5) Clean model text (strip whitespace & code fences)
+        raw_text = (getattr(result, "text", "") or "")
+        cleaned_text = raw_text.strip()
+        if cleaned_text.startswith("```"):
+            # remove leading ```/```json
+            cleaned_text = re.sub(r"^```(?:json)?", "", cleaned_text, flags=re.I).strip()
+            # remove trailing ```
+            cleaned_text = re.sub(r"```$", "", cleaned_text).strip()
+
+        # 6) Make a pretty 'raw' if it's valid JSON; otherwise return cleaned text
+        pretty_raw = cleaned_text
+        try:
+            parsed = json.loads(cleaned_text)
+            pretty_raw = json.dumps(parsed, ensure_ascii=False, indent=2)
+        except Exception:
+            pass  # keep cleaned_text as-is
+
+        # 7) Extract label & justification (uses your helper)
+        label, justification = _extract_label_and_justification(cleaned_text)
+        if not label:
+            return Response(
+                {"error": "parse_failed", "raw": pretty_raw},
+                status=status.HTTP_502_BAD_GATEWAY,
+            )
+
+        # 8) Final tidy of justification
+        justification = (justification or "").strip().replace("\n", " ").strip('"')
+        if len(justification) > self.MAX_JUST_LEN:
+            justification = justification[: self.MAX_JUST_LEN - 1].rstrip() + "…"
+
+        # 9) Build response
+        payload = {
+            "claim": claim,
+            "candidateResponse": {
+                "label": label,
+                "justification": justification,
+            },
+            "latency_ms": getattr(result, "latency_ms", None),
+            "raw": pretty_raw[:2000],  # cap size for safety
+        }
+        return Response(LabelResultSerializer(payload).data, status=status.HTTP_200_OK)

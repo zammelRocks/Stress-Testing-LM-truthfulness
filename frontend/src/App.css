@@ -506,7 +506,7 @@ body{
   text-transform: uppercase;
 }
 
-.text-muted {
+.text-mutedons {
     --bs-text-opacity: 1;
     color: pink !important;
 }

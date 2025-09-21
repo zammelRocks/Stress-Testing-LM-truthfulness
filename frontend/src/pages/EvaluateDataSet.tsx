@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import '../App.css'; // ✅ keep your styling
-import Header from '../components/Header'; // ✅ respect your Header
-import Footer from '../components/Footer'; // ✅ and Footer
+import '../App.css'; 
+import Header from '../components/Header'; 
+import Footer from '../components/Footer'; 
 import AppLoader from '../components/AppLoader';
 import type { DatasetUploadResponse } from '../types';
 
@@ -70,25 +70,25 @@ const EvaluateDataSet: React.FC = () => {
                   <div className="card-body">
                     <div className="row g-3">
                       <div className="col-6">
-                        <small className="text-muted d-block">Name</small>
+                        <small className="text-mutedons d-block">Name</small>
                         <div className="fw-semibold">{data.dataset.name}</div>
                       </div>
                       <div className="col-6">
-                        <small className="text-muted d-block">Kind</small>
+                        <small className="text-mutedons d-block">Kind</small>
                         <div className="fw-semibold text-uppercase">{data.dataset.kind}</div>
                       </div>
                       <div className="col-6">
-                        <small className="text-muted d-block">Rows</small>
+                        <small className="text-mutedons d-block">Rows</small>
                         <div className="fw-semibold">{data.dataset.row_count}</div>
                       </div>
                       <div className="col-6">
-                        <small className="text-muted d-block">Created</small>
+                        <small className="text-mutedons d-block">Created</small>
                         <div className="fw-semibold">
                           {new Date(data.dataset.uploaded_at).toLocaleString()}
                         </div>
                       </div>
                       <div className="col-12">
-                        <small className="text-muted d-block">Inserted</small>
+                        <small className="text-mutedons d-block ">Inserted</small>
                         <div className="fw-semibold">{data.inserted}</div>
                       </div>
                     </div>
