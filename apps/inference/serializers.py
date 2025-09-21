@@ -53,3 +53,11 @@ class InferenceModelSerializer(serializers.Serializer):
     def get_display_name(self, obj):
         # nice label for dropdowns
         return f"{obj.slug} ({obj.repo_id})"
+
+class LabelDatasetRequestSerializer(serializers.Serializer):
+    dataset_id = serializers.IntegerField()
+    model_slug = serializers.CharField(required=False, allow_blank=True)
+    limit = serializers.IntegerField(required=False, min_value=1)
+    offset = serializers.IntegerField(required=False, min_value=0)
+    max_rows = serializers.IntegerField(required=False, min_value=1)  # safety cap per request
+    format = serializers.ChoiceField(choices=["csv", "json"], required=False, default="csv")

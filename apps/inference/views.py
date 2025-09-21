@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from apps.models_registry.models import HFModel
+from apps.datasets.models import Dataset, DatasetRow
 from .serializers import GenerateRequestSerializer, GenerateStreamRequestSerializer
 from .router import generate_for_model, stream_for_model
 from apps.inference.backends import OllamaBackend 
@@ -30,7 +31,7 @@ from .serializers import (
 )
 from django.shortcuts import get_object_or_404
 from apps.models_registry.models import HFModel, ModelBackend
-
+from .serializers import LabelDatasetRequestSerializer
 logger = logging.getLogger(__name__)
 
 # History is optional: if the app/model isn't present yet, we just skip persisting.
@@ -331,3 +332,125 @@ class LabelClaimView(APIView):
             "raw": pretty_raw[:2000],  # cap size for safety
         }
         return Response(LabelResultSerializer(payload).data, status=status.HTTP_200_OK)
+def _clean_model_text(s: str) -> str:
+    s = (s or "").strip()
+    if s.startswith("```"):
+        s = re.sub(r"^```(?:json)?", "", s, flags=re.I).strip()
+        s = re.sub(r"```$", "", s).strip()
+    return s
+
+@method_decorator(csrf_exempt, name="dispatch")
+class LabelDatasetView(APIView):
+    """
+    POST /api/inference/label_dataset/
+    Body:
+      {
+        "dataset_id": 123,
+        "model_slug": "mistral-7b",   # optional, default = first active OLLAMA model
+        "limit": 500,                  # optional window (pagination)
+        "offset": 0,                   # optional
+        "max_rows": 2000,              # optional safety cap
+        "format": "csv" | "json"       # default csv
+      }
+
+    Returns:
+      - CSV attachment (default) with columns:
+        row_id, claim, reference, gold_label, pred_label, justification, model_slug, latency_ms
+      - or JSON list if format=json
+    """
+    MAX_ROWS_HARD_CAP = 5000  # server safety
+
+    def post(self, request):
+        s = LabelDatasetRequestSerializer(data=request.data)
+        s.is_valid(raise_exception=True)
+        dataset_id = s.validated_data["dataset_id"]
+        model_slug = s.validated_data.get("model_slug")
+        limit = s.validated_data.get("limit")
+        offset = s.validated_data.get("offset", 0)
+        max_rows = s.validated_data.get("max_rows", self.MAX_ROWS_HARD_CAP)
+        out_format = s.validated_data.get("format", "csv")
+
+        if max_rows > self.MAX_ROWS_HARD_CAP:
+            max_rows = self.MAX_ROWS_HARD_CAP
+
+        ds = get_object_or_404(Dataset, id=dataset_id)
+
+        # Pick an OLLAMA model
+        if model_slug:
+            model = get_object_or_404(HFModel, slug=model_slug, is_active=True, backend=ModelBackend.OLLAMA)
+        else:
+            model = HFModel.objects.filter(is_active=True, backend=ModelBackend.OLLAMA).order_by("id").first()
+            if not model:
+                return Response(
+                    {"error": "no_active_model", "detail": "No active OLLAMA model available."},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
+        # Slice the dataset rows
+        qs = DatasetRow.objects.filter(dataset=ds).order_by("id")
+        if offset:
+            qs = qs[offset:]
+        if limit:
+            qs = qs[:limit]
+        qs = qs[:max_rows]
+
+        prompt_tpl = (
+            "You are a binary fact checker. Given a CLAIM, decide if it is Accepted or Refuted, "
+            "and provide a BRIEF justification grounded in general knowledge.\n\n"
+            "CLAIM: {claim}\n\n"
+            "Respond in JSON ONLY with keys: label (Accepted|Refuted), justification (<= 2 sentences)."
+        )
+
+        results = []
+        for row in qs:
+            claim = (row.claim or "").strip()
+            reference = (row.reference or "")
+            gold = (row.label or "")
+            pred_label = ""
+            justification = ""
+            latency_ms = ""
+
+            if claim:
+                try:
+                    prompt = prompt_tpl.format(claim=claim)
+                    result = generate_for_model(model, prompt, params={})
+                    cleaned = _clean_model_text(getattr(result, "text", "") or "")
+                    # reuse your helper from LabelClaimView:
+                    lab, jus = _extract_label_and_justification(cleaned)
+                    pred_label = lab or ""
+                    justification = (jus or "").strip().replace("\n", " ").strip('"')
+                    latency_ms = getattr(result, "latency_ms", "")
+                except Exception as e:
+                    logger.exception("Labeling failed for row=%s", row.id)
+                    justification = f"ERROR: {e}"
+
+            results.append({
+                "row_id": row.id,
+                "claim": claim,
+                "reference": reference,
+                "gold_label": gold,
+                "pred_label": pred_label,
+                "justification": justification,
+                "model_slug": model.slug,
+                "latency_ms": latency_ms,
+            })
+
+        if out_format == "json":
+            return Response(results, status=200)
+
+        # CSV response (default)
+        buf = io.StringIO()
+        writer = csv.DictWriter(buf, fieldnames=[
+            "row_id", "claim", "reference", "gold_label",
+            "pred_label", "justification", "model_slug", "latency_ms"
+        ])
+        writer.writeheader()
+        for r in results:
+            writer.writerow(r)
+        csv_bytes = buf.getvalue().encode("utf-8")
+        buf.close()
+
+        filename = f"dataset_{ds.id}_labels_{model.slug}.csv"
+        resp = HttpResponse(csv_bytes, content_type="text/csv; charset=utf-8")
+        resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return resp
