@@ -10,7 +10,7 @@ A lightweight, end-to-end stack for generating model outputs, computing classic 
 # About Me Page : Let's Get in Touch
 <img width="1918" height="1032" alt="image" src="https://github.com/user-attachments/assets/47fa68fe-d574-4601-892a-aab94eaaa74e" />
 
-# Teaser : youll be able to evaluate your model on your dataset sooner ;)
+# Teaser : you will be able to evaluate your model on your dataset sooner ;)
 <img width="1298" height="850" alt="image" src="https://github.com/user-attachments/assets/6c993795-a898-4063-a497-bb8306a4b33f" />
 
 
