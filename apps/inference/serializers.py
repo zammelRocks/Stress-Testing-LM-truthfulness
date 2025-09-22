@@ -24,3 +24,40 @@ class GenerationSerializer(serializers.ModelSerializer):
         model = Generation
         fields = ["generation_id", "prompt", "output", "model_slug", "created_at"]
         read_only_fields = fields
+
+
+# evaluation module of datasets
+class CandidateResponseSerializer(serializers.Serializer):
+    label = serializers.ChoiceField(choices=["Accepted", "Refuted"])
+    justification = serializers.CharField()
+
+class LabelRequestSerializer(serializers.Serializer):
+    claim = serializers.CharField()
+    model_slug = serializers.CharField(required=False)                 # optional; default model if omitted
+    params = GenerationParamsSerializer(required=False)                # reuse your gen params
+
+class LabelResultSerializer(serializers.Serializer):
+    claim = serializers.CharField()
+    candidateResponse = CandidateResponseSerializer()
+    latency_ms = serializers.IntegerField(required=False)              # useful for UI/metrics
+    raw = serializers.CharField(required=False, allow_blank=True)      # (optional) raw model text for audit
+
+
+class InferenceModelSerializer(serializers.Serializer):
+    slug = serializers.CharField()
+    repo_id = serializers.CharField()
+    backend = serializers.CharField()
+    is_active = serializers.BooleanField()
+    display_name = serializers.SerializerMethodField()
+
+    def get_display_name(self, obj):
+        # nice label for dropdowns
+        return f"{obj.slug} ({obj.repo_id})"
+
+class LabelDatasetRequestSerializer(serializers.Serializer):
+    dataset_id = serializers.IntegerField()
+    model_slug = serializers.CharField(required=False, allow_blank=True)
+    limit = serializers.IntegerField(required=False, min_value=1)
+    offset = serializers.IntegerField(required=False, min_value=0)
+    max_rows = serializers.IntegerField(required=False, min_value=1)  # safety cap per request
+    format = serializers.ChoiceField(choices=["csv", "json"], required=False, default="csv")

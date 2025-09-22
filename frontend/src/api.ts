@@ -1,6 +1,8 @@
 // src/api.ts - Corrected API client for Django backend
 import type { GenerationResp, MetricsResp, JudgeScores, BackendGenerationResp } from "./types";
 import type { DatasetUploadResponse } from "./types"; 
+import type { InferenceModel, LabelDatasetRequest, LabelDatasetRowResult } from "./types";
+
 
 export const API_BASE =
   (import.meta as any)?.env?.VITE_API_BASE_URL || "http://127.0.0.1:8000";
@@ -367,10 +369,90 @@ export const api = {
   /** GET /api/datasets/<id>/rows/ */
   getDatasetRows: (id: number, params?: { limit?: number; offset?: number }) =>
     get(`${API_BASE}/api/datasets/${id}/rows/`, params),
-};
+    
+  listInferenceModels: async (): Promise<InferenceModel[]> => {
+      const url = `${API_BASE}/api/models/`;
+      console.log("[api][GET]", url);
+      const res = await fetch(url, { method: "GET", headers: { Accept: "application/json" } });
+      console.log("[api][GET][status]", res.status, res.statusText);
+      const text = await res.text();
+      console.log("[api][GET][text]", (text || "").slice(0, 200) + "...");
+      let json: any = text ? JSON.parse(text) : null;
+      if (!res.ok) {
+        const msg = json?.detail || json?.error || res.statusText || text || "Request failed";
+        throw new ApiError(res.status, text, json, msg);
+      }
+      return (json ?? []) as InferenceModel[];
+    },
+
+  /** POST /api/inference/label_dataset/ → JSON (optional, good for previews) */
+  labelDatasetJSON: async (args: LabelDatasetRequest): Promise<LabelDatasetRowResult[]> => {
+    const url = `${API_BASE}/api/inference/label_dataset/`;
+    const payload = { ...args, format: "json" };
+    console.log("[api][POST][labelDatasetJSON]", url, payload);
+    const res = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify(payload),
+    });
+    const text = await res.text();
+    let json: any;
+    try { json = text ? JSON.parse(text) : undefined; } catch {}
+    if (!res.ok) {
+      const msg = json?.detail || json?.error || res.statusText || text || "Request failed";
+      throw new ApiError(res.status, text, json, msg);
+    }
+    return json as LabelDatasetRowResult[];
+  },
+
+  /** POST /api/inference/label_dataset/ → CSV download */
+  downloadLabeledDatasetCSV: async (
+    args: LabelDatasetRequest & { filename?: string }
+  ): Promise<void> => {
+    const { filename, ...rest } = args;
+    const url = `${API_BASE}/api/inference/label_dataset/`;
+    const payload = { ...rest, format: "csv" };
+    console.log("[api][POST][downloadLabeledDatasetCSV]", url, payload);
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        // Accept ANY content so JSON errors are allowed (prevents 406)
+        "Accept": "*/*",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new ApiError(res.status, text, undefined, text || res.statusText);
+    }
+
+    const blob = await res.blob();
+    const objUrl = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = objUrl;
+
+    const disp = res.headers.get("Content-Disposition") || "";
+    const match = /filename="([^"]+)"/.exec(disp);
+    a.download = filename || match?.[1] || "labels.csv";
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(objUrl);
+  },
+
+
+
 
 
   
+
+
+};
+
 
 
 

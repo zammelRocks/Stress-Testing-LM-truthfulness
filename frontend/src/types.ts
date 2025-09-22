@@ -54,18 +54,46 @@ export function normalizeGeneration(gen: BackendGenerationResp | GenerationResp)
 }
 
 export type DatasetKind = 'csv' | 'json' | 'jsonl' | 'ndjson';
+// ---- Models shown in the dropdown
+export interface InferenceModel {
+  slug: string;
+  repo_id: string;
+  backend: string;        // "ollama" for the ones we use here
+  is_active: boolean;
+  display_name?: string;
+}
 
+// ---- Upload response (dataset.id is REQUIRED)
 export interface DatasetUploadResponse {
   dataset: {
+    id: number;
     name: string;
-    kind: DatasetKind;
+    kind: string;         // "csv" | "json" | etc.
     row_count: number;
-    uploaded_at: string;
+    uploaded_at: string;  // ISO string
   };
   inserted: number;
-  sample: Array<{
-    claim?: string;
-    reference?: string;
-    label?: string;
-  }>;
+  sample: Array<{ claim: string; reference: string; label: string }>;
 }
+
+// ---- Request shape to label a dataset
+export interface LabelDatasetRequest {
+  dataset_id: number;
+  model_slug?: string;
+  limit?: number;
+  offset?: number;
+  max_rows?: number;
+}
+
+// ---- Optional JSON result shape if you use the preview API
+export interface LabelDatasetRowResult {
+  row_id: number | null;
+  claim: string;
+  reference: string;
+  gold_label: string;
+  pred_label: string;
+  justification: string;
+  model_slug: string;
+  latency_ms: number | string;
+}
+
