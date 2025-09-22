@@ -10,10 +10,17 @@ A lightweight, end-to-end stack for generating model outputs, computing classic 
 # About Me Page : Let's Get in Touch
 <img width="1918" height="1032" alt="image" src="https://github.com/user-attachments/assets/47fa68fe-d574-4601-892a-aab94eaaa74e" />
 
-# Teaser : you will be able to evaluate your model on your dataset sooner ;)
+# choose and evaluate against a dataSet
 <img width="1298" height="850" alt="image" src="https://github.com/user-attachments/assets/6c993795-a898-4063-a497-bb8306a4b33f" />
+# Preview results and download for future Use
+<img width="1252" height="851" alt="Screenshot 2025-09-22 012341" src="https://github.com/user-attachments/assets/d0ad22e6-7197-4baa-a0db-531037315b93" />
+
+# Coming Soon : Compute Metrics  Using ROUGE,BLEU,Cosine,BertScore Or LLM-as-a-judge ..
+
+# Coming Soon : Keep track of the dashboard, Visuals and graphs for Nerdies
 
 
+# Future Work : Prompt injection evaluation, Jail breaking or Prompt Mining :3 will see
 ---
 
 ## 1) Prerequisites
@@ -287,6 +294,7 @@ curl -X POST http://127.0.0.1:8000/api/evaluate/judge/ \
   -H "Content-Type: application/json" \
   -d '{"generation_id":33,"reference":"Golden leaves and crisp air—keep it 5/7/5.","judge_model":"mistral:7b"}'
 ```
+
 
 
 
