@@ -148,7 +148,7 @@ const DatasetLabeler: React.FC<DatasetLabelerProps> = ({ datasetId, modelSlug, c
               </tbody>
             </table>
           </div>
-          <small className="text-muted">Showing 3 sample rows</small>
+          <small className="text-mutedons">Showing 3 sample rows</small>
         </div>
       )}
     </div>

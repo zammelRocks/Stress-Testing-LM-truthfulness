@@ -192,7 +192,7 @@ body{
   box-shadow:0 0 20px rgba(0,255,255,.2)!important;color:var(--cyber-text)!important
 }
 .form-control::placeholder{color:var(--cyber-text-dim)!important;font-style:italic}
-.form-label{color:var(--cyber-primary)!important;font-weight:bold;text-transform:uppercase;letter-spacing:1px;font-size:12px}
+.form-label{color:var(--cyber-primary)!important;font-weight:bold;text-transform:uppercase;letter-spacing:1px;font-size:12px;}
 
 .alert{
   border-radius:8px!important;border:none!important;position:relative;overflow:hidden;backdrop-filter:blur(10px)
@@ -417,7 +417,7 @@ body{
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.05);
   border-radius: 0.5rem;
-  color: #fff;
+  color: #685c5c;
   transition: background 0.2s ease;
 }
 
