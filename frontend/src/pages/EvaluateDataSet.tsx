@@ -4,20 +4,24 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import AppLoader from "../components/AppLoader";
 import ModelPicker from "../components/ModelPicker";
-import DatasetLabeler from "../components/DatasetLabeler";
-import type { DatasetUploadResponse } from "../types";
+import DatasetLablerMetrics from "../components/DatasetLablerMetrics";
+import EvaluateMetricsDataset from "../components/EvaluateMetricsDataset";
+import type { DatasetUploadResponse, LabelDatasetRowResult } from "../types";
 
 const EvaluateDataSet: React.FC = () => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Upload result
+  // Upload result metadata
   const [data, setData] = useState<DatasetUploadResponse | null>(null);
 
   // Selected model slug
   const [modelSlug, setModelSlug] = useState<string | undefined>(undefined);
 
-  // Dataset id (tolerate legacy types)
+  // Rows labeled by the model
+  const [labeledRows, setLabeledRows] = useState<LabelDatasetRowResult[]>([]);
+
+  // Dataset id
   const datasetId = useMemo<number | undefined>(() => {
     const idMaybe = (data?.dataset as unknown as { id?: number })?.id;
     return typeof idMaybe === "number" ? idMaybe : undefined;
@@ -60,11 +64,13 @@ const EvaluateDataSet: React.FC = () => {
               onUploadComplete={(resp) => {
                 setData(resp);
                 setError(null);
+                setLabeledRows([]);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               onError={(msg) => {
                 setError(msg);
                 setData(null);
+                setLabeledRows([]);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               onBusyChange={setBusy}
@@ -114,7 +120,7 @@ const EvaluateDataSet: React.FC = () => {
             )}
 
             {/* Sample preview */}
-            {data?.sample?.length ? (
+            {Array.isArray(data?.sample) && data.sample.length > 0 && (
               <div className="cyber-panel">
                 <h3 className="panel-title">Sample Preview</h3>
                 <div className="cyber-table-wrapper">
@@ -140,15 +146,29 @@ const EvaluateDataSet: React.FC = () => {
                   </table>
                 </div>
               </div>
-            ) : null}
+            )}
 
-            {/* Evaluate section (after upload) */}
+            {/* Model selection */}
             {datasetId && (
-              <>
-                <ModelPicker value={modelSlug} onChange={setModelSlug} disabled={busy} />
+              <ModelPicker
+                value={modelSlug}
+                onChange={setModelSlug}
+                disabled={busy}
+              />
+            )}
 
-                <DatasetLabeler datasetId={datasetId} modelSlug={modelSlug} />
-              </>
+            {/* Label dataset with preview (includes metrics per row) */}
+            {datasetId && modelSlug && (
+              <DatasetLablerMetrics
+                datasetId={datasetId}
+                modelSlug={modelSlug}
+                onResults={setLabeledRows}
+              />
+            )}
+
+            {/* Full metrics evaluation (aggregates + detailed results) */}
+            {labeledRows.length > 0 && (
+              <EvaluateMetricsDataset rows={labeledRows} />
             )}
 
           </div>
