@@ -10,14 +10,22 @@ A lightweight, end-to-end stack for generating model outputs, computing classic 
 # About Me Page : Let's Get in Touch
 <img width="1918" height="1032" alt="image" src="https://github.com/user-attachments/assets/47fa68fe-d574-4601-892a-aab94eaaa74e" />
 
-# choose and evaluate against a dataSet
+# Choose and evaluate against a dataSet
 <img width="1298" height="850" alt="image" src="https://github.com/user-attachments/assets/6c993795-a898-4063-a497-bb8306a4b33f" />
 # Preview results and download for future Use
 <img width="1252" height="851" alt="Screenshot 2025-09-22 012341" src="https://github.com/user-attachments/assets/d0ad22e6-7197-4baa-a0db-531037315b93" />
 
-# Coming Soon : Compute Metrics  Using ROUGE,BLEU,Cosine,BertScore Or LLM-as-a-judge ..
+#  Compute Metrics  Using ROUGE,BLEU,Cosine 
+<img width="1252" height="851" alt="dataSetIngestionResultsPreview" src="https://github.com/user-attachments/assets/173270f8-462a-4c50-846a-6034c5105419" />
 
-# Coming Soon : Keep track of the dashboard, Visuals and graphs for Nerdies
+<img width="1196" height="177" alt="Screenshot 2025-09-30 152445" src="https://github.com/user-attachments/assets/e5ac6c4d-5cba-46d8-9c34-e6ec171fff5b" />
+
+# Keep track of the dashboard, Visuals and graphs 
+<img width="1212" height="817" alt="dashboardMetricsClasssification" src="https://github.com/user-attachments/assets/b7ba3bcb-98f7-4876-82d1-a19d2266219d" />
+
+<img width="1223" height="933" alt="image" src="https://github.com/user-attachments/assets/9654e6eb-50ac-44de-8d11-d4c8061d6cc0" />
+
+# Coming Soon :Use LLM-as-a-judge to evaluate ..
 
 
 # Future Work : Prompt injection evaluation, Jail breaking or Prompt Mining :3 will see
@@ -294,6 +302,7 @@ curl -X POST http://127.0.0.1:8000/api/evaluate/judge/ \
   -H "Content-Type: application/json" \
   -d '{"generation_id":33,"reference":"Golden leaves and crisp air—keep it 5/7/5.","judge_model":"mistral:7b"}'
 ```
+
 
 
 
