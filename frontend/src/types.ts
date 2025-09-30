@@ -83,6 +83,7 @@ export interface LabelDatasetRequest {
   limit?: number;
   offset?: number;
   max_rows?: number;
+  format?: string; 
 }
 
 // ---- Optional JSON result shape if you use the preview API

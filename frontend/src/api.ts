@@ -443,6 +443,15 @@ export const api = {
     a.remove();
     URL.revokeObjectURL(objUrl);
   },
+  /** POST /api/evaluate/ with raw candidate + reference */
+  evaluateTextMetrics: (candidate: string, reference: string) =>
+    post<MetricsResp>(join(PATHS.evaluate, "/"), {
+      candidate,
+      reference,
+     metrics: ["bleu", "rouge", "cosine"],
+  }),
+
+  
 
 
 
