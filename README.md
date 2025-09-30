@@ -8,14 +8,27 @@ A lightweight, end-to-end stack for generating model outputs, computing classic 
 
 
 # About Me Page : Let's Get in Touch
+
+
+
 <img width="1918" height="1032" alt="image" src="https://github.com/user-attachments/assets/47fa68fe-d574-4601-892a-aab94eaaa74e" />
 
+
 # Choose and evaluate against a dataSet
+
+
 <img width="1298" height="850" alt="image" src="https://github.com/user-attachments/assets/6c993795-a898-4063-a497-bb8306a4b33f" />
+
+
 # Preview results and download for future Use
+
+
 <img width="1252" height="851" alt="Screenshot 2025-09-22 012341" src="https://github.com/user-attachments/assets/d0ad22e6-7197-4baa-a0db-531037315b93" />
 
+
 #  Compute Metrics  Using ROUGE,BLEU,Cosine 
+
+
 <img width="1252" height="851" alt="dataSetIngestionResultsPreview" src="https://github.com/user-attachments/assets/173270f8-462a-4c50-846a-6034c5105419" />
 
 <img width="1196" height="177" alt="Screenshot 2025-09-30 152445" src="https://github.com/user-attachments/assets/e5ac6c4d-5cba-46d8-9c34-e6ec171fff5b" />
@@ -302,6 +315,7 @@ curl -X POST http://127.0.0.1:8000/api/evaluate/judge/ \
   -H "Content-Type: application/json" \
   -d '{"generation_id":33,"reference":"Golden leaves and crisp air—keep it 5/7/5.","judge_model":"mistral:7b"}'
 ```
+
 
 
 
