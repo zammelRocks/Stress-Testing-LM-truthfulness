@@ -152,7 +152,7 @@ const EvaluateMetricsDataset: React.FC<Props> = ({ rows, datasetId }) => {
       await api.downloadLabeledDatasetCSV({
         dataset_id: datasetId,
         model_slug: rows[0]?.model_slug || "unknown-model",
-        format: "csv",
+        
         filename: "labeled_dataset.csv",
       });
     } catch (err) {

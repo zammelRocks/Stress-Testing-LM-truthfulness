@@ -11,7 +11,9 @@ def _embedder():
     return _EMB
 
 def compute_bleu(candidate: str, reference: str) -> float:
-    return sacrebleu.corpus_bleu([candidate], [[reference]]).score
+    """Compute BLEU score normalized to [0, 1]."""
+    bleu = sacrebleu.corpus_bleu([candidate], [[reference]])
+    return bleu.score / 100.0
 
 def compute_rouge(candidate: str, reference: str) -> dict:
     scorer = rouge_scorer.RougeScorer(['rouge1','rougeLsum'], use_stemmer=True)
