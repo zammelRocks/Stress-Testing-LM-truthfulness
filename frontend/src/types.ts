@@ -83,7 +83,6 @@ export interface LabelDatasetRequest {
   limit?: number;
   offset?: number;
   max_rows?: number;
-  format?: string; 
 }
 
 // ---- Optional JSON result shape if you use the preview API
@@ -96,5 +95,7 @@ export interface LabelDatasetRowResult {
   justification: string;
   model_slug: string;
   latency_ms: number | string;
+  generation_id?: number;
 }
+
 

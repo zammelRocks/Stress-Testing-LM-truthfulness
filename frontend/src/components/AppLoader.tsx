@@ -49,14 +49,14 @@ const AppLoader: React.FC<AppLoaderProps> = ({ onUploadComplete, onError, onBusy
 
       <div className="cyber-actions">
         <button
-          className="btn-glow btn-glow-primary"
+          className="btn btn-cyber"
           onClick={handleUpload}
           disabled={busy || !file}
         >
           {busy ? "Uploading…" : "Upload"}
         </button>
         <button
-          className="btn-glow btn-glow-secondary"
+          className="btn btn-cyber"
           type="button"
           onClick={() => {
             setFile(null);

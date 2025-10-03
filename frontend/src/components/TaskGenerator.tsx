@@ -47,7 +47,7 @@ export default function TaskGenerator({
               className="form-control ai-input mb-3"
               value={modelSlug}
               onChange={(e) => setModelSlug(e.target.value)}
-              placeholder="e.g. mistral:7b"
+              placeholder="e.g. gemma3-4b-ollama"
             />
             <button
               onClick={onGenerate}

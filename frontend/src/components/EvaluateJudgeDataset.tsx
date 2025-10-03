@@ -145,14 +145,14 @@ const EvaluateJudgeDataset: React.FC<Props> = ({ rows, previewLimit = 3 }) => {
         <h3 className="panel-title"> LLM Judge Evaluation (mistral:7b)</h3>
         <div className="d-flex gap-3">
           <button
-            className="btn-glow btn-glow-primary"
+            className="btn btn-cyber"
             disabled={loading}
             onClick={runJudgePreview}
           >
             {loading ? "Judging..." : " Run LLM Judge"}
           </button>
           <button
-            className="btn-glow btn-glow-secondary"
+            className="btn btn-cyber"
             onClick={downloadFull}
           >
             Download Full Results
