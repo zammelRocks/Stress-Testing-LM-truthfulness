@@ -11,15 +11,16 @@ interface Props {
 const DatasetLablerMetrics: React.FC<Props> = ({ datasetId, modelSlug, onResults }) => {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [results, setResults] = useState<LabelDatasetRowResult[]>([]);
+  const [success, setSuccess] = useState(false);
 
   async function handleLabelDataset() {
     setBusy(true);
+    setError(null);
+    setSuccess(false);
     try {
       const rows = await api.labelDatasetJSON({
         dataset_id: datasetId,
         model_slug: modelSlug,
-        
         limit: 50, // preview only
         offset: 0,
       });
@@ -27,12 +28,12 @@ const DatasetLablerMetrics: React.FC<Props> = ({ datasetId, modelSlug, onResults
       // ✅ assign incremental generation_id
       const rowsWithGenId: LabelDatasetRowResult[] = rows.map((r: any, idx: number) => ({
         ...r,
-        generation_id: idx + 1, // incremental id
+        generation_id: idx + 1,
       }));
 
-      setResults(rowsWithGenId);
-      setError(null);
       if (onResults) onResults(rowsWithGenId);
+
+      setSuccess(true);
     } catch (e: any) {
       console.error("Failed to label dataset", e);
       setError("Failed to label dataset");
@@ -43,7 +44,8 @@ const DatasetLablerMetrics: React.FC<Props> = ({ datasetId, modelSlug, onResults
 
   return (
     <div className="cyber-panel mt-3">
-      <h3 className="panel-title">Label Dataset with Model</h3>
+      <h3 className="panel-title">Run Predictions</h3>
+
       <button
         className="btn btn-cyber"
         disabled={busy}
@@ -58,30 +60,9 @@ const DatasetLablerMetrics: React.FC<Props> = ({ datasetId, modelSlug, onResults
         </div>
       )}
 
-      {results.length > 0 && (
-        <div className="cyber-table-wrapper mt-3">
-          <table className="cyber-table">
-            <thead>
-              <tr>
-                <th>Gen ID</th>
-                <th>Claim</th>
-                <th>Gold Label</th>
-                <th>Predicted Label</th>
-                <th>Justification</th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((row, idx) => (
-                <tr key={idx}>
-                  <td>{row.generation_id}</td>
-                  <td>{row.claim}</td>
-                  <td>{row.gold_label}</td>
-                  <td>{row.pred_label}</td>
-                  <td>{row.justification}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {success && (
+        <div className="alert ai-alert alert-success mt-3">
+          ✅ <strong>Success:</strong> Labeling completed!
         </div>
       )}
     </div>

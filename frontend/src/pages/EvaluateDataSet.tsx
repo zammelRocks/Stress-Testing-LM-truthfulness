@@ -6,6 +6,7 @@ import AppLoader from "../components/AppLoader";
 import ModelPicker from "../components/ModelPicker";
 import DatasetLablerMetrics from "../components/DatasetLablerMetrics";
 import EvaluateMetricsDataset from "../components/EvaluateMetricsDataset";
+import EvaluateJudgeDataset from "../components/EvaluateJudgeDataset"; // new judge component
 import type { DatasetUploadResponse, LabelDatasetRowResult } from "../types";
 
 const EvaluateDataSet: React.FC = () => {
@@ -57,14 +58,15 @@ const EvaluateDataSet: React.FC = () => {
 
       <main className="container-fluid py-4 cyber-main">
         <div className="row justify-content-center">
-          <div className="col-12 col-lg-8">
+          <div className="col-12 col-lg-9">
 
-            {/* Upload */}
+            {/* Upload step */}
             <AppLoader
               onUploadComplete={(resp) => {
                 setData(resp);
                 setError(null);
                 setLabeledRows([]);
+                setModelSlug(undefined);
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}
               onError={(msg) => {
@@ -82,73 +84,65 @@ const EvaluateDataSet: React.FC = () => {
               </div>
             )}
 
-            {/* Dataset details */}
+            {/* Dataset details + small preview (only ONCE here) */}
             {currentDataset && (
               <div className="card panel-fixed mt-3">
                 <div className="card-header">
-                  <h6 className="card-title mb-0">Dataset Details</h6>
+                  <h6 className="card-title mb-0">Dataset Uploaded</h6>
                 </div>
                 <div className="card-body">
                   <div className="row g-3">
                     <div className="col-6">
-                      <small className="text-mutedons d-block">Name</small>
+                      <small className="text-muted d-block">Name</small>
                       <div className="fw-semibold">{currentDataset.name}</div>
                     </div>
                     <div className="col-6">
-                      <small className="text-mutedons d-block">Kind</small>
-                      <div className="fw-semibold text-uppercase">{currentDataset.kind}</div>
-                    </div>
-                    <div className="col-6">
-                      <small className="text-mutedons d-block">Rows</small>
+                      <small className="text-muted d-block">Rows</small>
                       <div className="fw-semibold">{currentDataset.row_count}</div>
                     </div>
                     <div className="col-6">
-                      <small className="text-mutedons d-block">Uploaded</small>
+                      <small className="text-muted d-block">Kind</small>
+                      <div className="fw-semibold text-uppercase">{currentDataset.kind}</div>
+                    </div>
+                    <div className="col-6">
+                      <small className="text-muted d-block">Uploaded</small>
                       <div className="fw-semibold">
                         {new Date(currentDataset.uploaded_at).toLocaleString()}
                       </div>
                     </div>
-                    {typeof (data as any)?.inserted === "number" && (
-                      <div className="col-12">
-                        <small className="text-mutedons d-block">Inserted</small>
-                        <div className="fw-semibold">{(data as any).inserted}</div>
-                      </div>
-                    )}
                   </div>
+
+                  {/* Sample preview */}
+                  {Array.isArray(data?.sample) && data.sample.length > 0 && (
+                    <div className="cyber-panel mt-3">
+                      <h6 className="panel-title">Sample Preview (3 rows)</h6>
+                      <div className="cyber-table-wrapper">
+                        <table className="cyber-table">
+                          <thead>
+                            <tr>
+                              <th>Claim</th>
+                              <th>Reference</th>
+                              <th>Label</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {data.sample.slice(0, 3).map((row, idx) => (
+                              <tr key={idx}>
+                                <td>{row.claim || <em>—</em>}</td>
+                                <td>{row.reference || <em>—</em>}</td>
+                                <td><span className="label-pill">{row.label || "—"}</span></td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
 
-            {/* Sample preview */}
-            {Array.isArray(data?.sample) && data.sample.length > 0 && (
-              <div className="cyber-panel">
-                <h3 className="panel-title">Sample Preview</h3>
-                <div className="cyber-table-wrapper">
-                  <table className="cyber-table">
-                    <thead>
-                      <tr>
-                        <th>CLAIM</th>
-                        <th>REFERENCE</th>
-                        <th>LABEL</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {data.sample.map((row, idx) => (
-                        <tr key={idx}>
-                          <td>{row.claim || <em>—</em>}</td>
-                          <td>{row.reference || <em>—</em>}</td>
-                          <td>
-                            <span className="label-pill">{row.label || "—"}</span>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
-            )}
-
-            {/* Model selection */}
+            {/* Step 2: Model selection */}
             {datasetId && (
               <ModelPicker
                 value={modelSlug}
@@ -157,7 +151,7 @@ const EvaluateDataSet: React.FC = () => {
               />
             )}
 
-            {/* Label dataset with preview (includes metrics per row) */}
+            {/* Step 3: Run labeling predictions */}
             {datasetId && modelSlug && (
               <DatasetLablerMetrics
                 datasetId={datasetId}
@@ -166,11 +160,13 @@ const EvaluateDataSet: React.FC = () => {
               />
             )}
 
-            {/* Full metrics evaluation (aggregates + detailed results) */}
+            {/* Step 4: Show metrics */}
             {labeledRows.length > 0 && (
-              <EvaluateMetricsDataset rows={labeledRows} />
+              <>
+                <EvaluateMetricsDataset rows={labeledRows} />
+                <EvaluateJudgeDataset rows={labeledRows} /> 
+              </>
             )}
-
           </div>
         </div>
       </main>

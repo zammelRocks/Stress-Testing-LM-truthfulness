@@ -145,29 +145,41 @@ const EvaluateMetricsDataset: React.FC<Props> = ({ rows, datasetId }) => {
     }));
   }, [results]);
 
-  /** CSV download */
-  async function downloadCSV() {
-    if (!datasetId) return;
-    try {
-      await api.downloadLabeledDatasetCSV({
-        dataset_id: datasetId,
-        model_slug: rows[0]?.model_slug || "unknown-model",
-        
-        filename: "labeled_dataset.csv",
-      });
-    } catch (err) {
-      console.error("Download failed", err);
-    }
+  /** CSV download — all rows */
+  function downloadAllCSV() {
+    if (!results.length) return;
+    let csv =
+      "GenID,Claim,Reference,Gold Label,Pred Label,BLEU,ROUGE-1,ROUGE-L,Cosine,Error\n";
+    results.forEach((r) => {
+      csv += [
+        r.generation_id,
+        `"${r.claim}"`,
+        `"${r.reference}"`,
+        normalizeLabel(r.gold_label),
+        normalizeLabel(r.pred_label),
+        normalizeBleu(r.metrics?.bleu).toFixed(3),
+        clamp01(r.metrics?.rouge1).toFixed(3),
+        clamp01(r.metrics?.rougeL).toFixed(3),
+        clamp01(r.metrics?.cosine).toFixed(3),
+        r.error ?? "—",
+      ].join(",") + "\n";
+    });
+    const blob = new Blob([csv], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "dataset_metrics.csv";
+    a.click();
+    URL.revokeObjectURL(url);
   }
 
   return (
     <div className="cyber-panel mt-3">
-      <h3 className="panel-title">Evaluate Metrics on Dataset</h3>
+      <h3 className="panel-title">Labeled Dataset (Preview)</h3>
 
       {/* 🔹 Step 1: labeled dataset preview */}
       {rows.length > 0 && (
         <div className="cyber-table-wrapper mt-3">
-          <h5>Labeled Dataset (Preview)</h5>
           <table className="cyber-table">
             <thead>
               <tr>
@@ -179,7 +191,7 @@ const EvaluateMetricsDataset: React.FC<Props> = ({ rows, datasetId }) => {
               </tr>
             </thead>
             <tbody>
-              {rows.map((row, idx) => (
+              {rows.slice(0, 3).map((row, idx) => (
                 <tr key={idx}>
                   <td>{row.generation_id}</td>
                   <td>{row.claim}</td>
@@ -190,20 +202,19 @@ const EvaluateMetricsDataset: React.FC<Props> = ({ rows, datasetId }) => {
               ))}
             </tbody>
           </table>
-          <button className="btn btn-cyber mt-2" onClick={downloadCSV}>
-            Download Full Dataset CSV
-          </button>
         </div>
       )}
 
       {/* 🔹 Step 2: evaluate button */}
-      <button
-        className="btn btn-cyber mt-3"
-        onClick={evaluateJustifications}
-        disabled={busy}
-      >
-        {busy ? "Evaluating..." : "Compute Metrics"}
-      </button>
+      {rows.length > 0 && (
+        <button
+          className="btn btn-cyber mt-3"
+          onClick={evaluateJustifications}
+          disabled={busy}
+        >
+          {busy ? "Evaluating..." : "Compute Metrics"}
+        </button>
+      )}
 
       {error && (
         <div className="alert ai-alert alert-danger mt-3">
@@ -211,10 +222,10 @@ const EvaluateMetricsDataset: React.FC<Props> = ({ rows, datasetId }) => {
         </div>
       )}
 
-      {/* 🔹 Step 3: metrics table */}
+      {/* 🔹 Step 3: metrics preview */}
       {results.length > 0 && (
         <div className="cyber-table-wrapper mt-3">
-          <h5>Metrics per Row</h5>
+          <h5>Metrics per Row (Preview)</h5>
           <table className="cyber-table">
             <thead>
               <tr>
@@ -231,7 +242,7 @@ const EvaluateMetricsDataset: React.FC<Props> = ({ rows, datasetId }) => {
               </tr>
             </thead>
             <tbody>
-              {results.map((row, idx) => (
+              {results.slice(0, 3).map((row, idx) => (
                 <tr key={idx}>
                   <td>{row.generation_id}</td>
                   <td>{row.claim}</td>
@@ -247,6 +258,11 @@ const EvaluateMetricsDataset: React.FC<Props> = ({ rows, datasetId }) => {
               ))}
             </tbody>
           </table>
+
+          {/* ✅ Download ALL results */}
+          <button className="btn btn-cyber mt-3" onClick={downloadAllCSV}>
+            Download Full Dataset CSV ({results.length} rows)
+          </button>
         </div>
       )}
 
