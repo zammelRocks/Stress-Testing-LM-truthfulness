@@ -47,7 +47,7 @@ const normalizeBleu = (v?: number) => {
   return clamp01(v); // already 0–1
 };
 
-const EvaluateMetricsDataset: React.FC<Props> = ({ rows, datasetId }) => {
+const EvaluateMetricsDataset: React.FC<Props> = ({ rows }) => {
   const [busy, setBusy] = useState(false);
   const [results, setResults] = useState<RowWithMetrics[]>([]);
   const [error, setError] = useState<string | null>(null);

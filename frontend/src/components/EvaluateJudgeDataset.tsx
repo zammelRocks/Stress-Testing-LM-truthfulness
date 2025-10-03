@@ -8,7 +8,7 @@ interface Props {
   previewLimit?: number;
 }
 
-const EvaluateJudgeDataset: React.FC<Props> = ({ rows, previewLimit = 5 }) => {
+const EvaluateJudgeDataset: React.FC<Props> = ({ rows, previewLimit = 3 }) => {
   const [judgeResults, setJudgeResults] = useState<
     Record<number, JudgeScores & { error?: string }>
   >({});
@@ -99,20 +99,20 @@ const EvaluateJudgeDataset: React.FC<Props> = ({ rows, previewLimit = 5 }) => {
   return (
     <div className="cyber-panel mt-4">
       <div className="panel-header d-flex justify-content-between align-items-center">
-        <h3 className="panel-title">🤖 LLM Judge Evaluation (mistral:7b)</h3>
+        <h3 className="panel-title"> LLM Judge Evaluation (mistral:7b)</h3>
         <div className="d-flex gap-3">
           <button
             className="btn-glow btn-glow-primary"
             disabled={loading}
             onClick={runJudgePreview}
           >
-            {loading ? "Judging..." : "⚡ Run LLM Judge"}
+            {loading ? "Judging..." : " Run LLM Judge"}
           </button>
           <button
             className="btn-glow btn-glow-secondary"
             onClick={downloadFull}
           >
-            ⬇️ Download Full Results
+             Download Full Results
           </button>
         </div>
       </div>
@@ -154,10 +154,7 @@ const EvaluateJudgeDataset: React.FC<Props> = ({ rows, previewLimit = 5 }) => {
               })}
             </tbody>
           </table>
-          <p className="text-muted mt-2">
-            Showing only first {previewLimit} rows. Click{" "}
-            <strong>⬇️ Download Full Results</strong> for the complete dataset.
-          </p>
+          
         </div>
       )}
     </div>
