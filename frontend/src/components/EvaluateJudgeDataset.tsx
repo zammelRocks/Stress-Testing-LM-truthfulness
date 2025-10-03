@@ -1,0 +1,164 @@
+// src/components/EvaluateJudgeDataset.tsx
+import React, { useState } from "react";
+import { api } from "../api";
+import type { LabelDatasetRowResult, JudgeScores } from "../types";
+
+interface Props {
+  rows: LabelDatasetRowResult[];
+  previewLimit?: number;
+}
+
+const EvaluateJudgeDataset: React.FC<Props> = ({ rows, previewLimit = 3 }) => {
+  const [judgeResults, setJudgeResults] = useState<
+    Record<number, JudgeScores & { error?: string }>
+  >({});
+  const [loading, setLoading] = useState(false);
+
+  const runJudgePreview = async () => {
+    setLoading(true);
+    const results: Record<number, JudgeScores & { error?: string }> = {};
+    const previewRows = rows.slice(0, previewLimit);
+
+    for (let i = 0; i < previewRows.length; i++) {
+      const row = previewRows[i];
+      try {
+        const res = await api.judge(
+          row.generation_id ?? i,
+          row.reference,
+          row.justification
+        );
+        results[row.generation_id ?? i] = res;
+      } catch (err: any) {
+        results[row.generation_id ?? i] = {
+          correctness: 0,
+          relevance: 0,
+          fluency: 0,
+          overall: 0,
+          error: err.message || "Judge failed",
+        };
+      }
+    }
+    setJudgeResults(results);
+    setLoading(false);
+  };
+
+  const downloadFull = async () => {
+    const results: (LabelDatasetRowResult & JudgeScores)[] = [];
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows[i];
+      try {
+        const res = await api.judge(
+          row.generation_id ?? i,
+          row.reference,
+          row.justification
+        );
+        results.push({ ...row, ...res });
+      } catch {
+        results.push({
+          ...row,
+          correctness: 0,
+          relevance: 0,
+          fluency: 0,
+          overall: 0,
+        });
+      }
+    }
+
+    const header = [
+      "claim",
+      "reference",
+      "justification",
+      "correctness",
+      "relevance",
+      "fluency",
+      "overall",
+    ];
+    const csvRows = [
+      header.join(","),
+      ...results.map((r) =>
+        [
+          `"${r.claim}"`,
+          `"${r.reference}"`,
+          `"${r.justification}"`,
+          r.correctness,
+          r.relevance,
+          r.fluency,
+          r.overall,
+        ].join(",")
+      ),
+    ];
+    const blob = new Blob([csvRows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "judge_results.csv";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="cyber-panel mt-4">
+      <div className="panel-header d-flex justify-content-between align-items-center">
+        <h3 className="panel-title"> LLM Judge Evaluation (mistral:7b)</h3>
+        <div className="d-flex gap-3">
+          <button
+            className="btn-glow btn-glow-primary"
+            disabled={loading}
+            onClick={runJudgePreview}
+          >
+            {loading ? "Judging..." : " Run LLM Judge"}
+          </button>
+          <button
+            className="btn-glow btn-glow-secondary"
+            onClick={downloadFull}
+          >
+             Download Full Results
+          </button>
+        </div>
+      </div>
+
+      {Object.keys(judgeResults).length > 0 && (
+        <div className="cyber-table-wrapper mt-3">
+          <table className="cyber-table">
+            <thead>
+              <tr>
+                <th>Claim</th>
+                <th>Reference</th>
+                <th>Justification</th>
+                <th>Correctness</th>
+                <th>Relevance</th>
+                <th>Fluency</th>
+                <th>Overall</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody>
+              {rows.slice(0, previewLimit).map((row, idx) => {
+                const scores = judgeResults[row.generation_id ?? idx];
+                return (
+                  <tr key={row.generation_id ?? idx}>
+                    <td>{row.claim}</td>
+                    <td>{row.reference}</td>
+                    <td>{row.justification}</td>
+                    <td>{scores?.correctness ?? "—"}</td>
+                    <td>{scores?.relevance ?? "—"}</td>
+                    <td>{scores?.fluency ?? "—"}</td>
+                    <td className="cyber-highlight">
+                      {scores?.overall ?? "—"}
+                    </td>
+                    <td className="text-danger">
+                      {scores?.error ? `⚠️ ${scores.error}` : ""}
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+          
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default EvaluateJudgeDataset;
