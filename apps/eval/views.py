@@ -115,29 +115,59 @@ class EvaluateView(APIView):
 @method_decorator(csrf_exempt, name="dispatch")
 class JudgeView(APIView):
     """
-    POST:
-      { "generation_id": 4, "reference": "...", "judge_model": "mistral:7b", "candidate"?: "override" }
+    POST body:
+      {
+        "generation_id"?: 4,          # optional if candidate is provided
+        "reference": "...",
+        "candidate"?: "override",     # required if no generation_id
+        "judge_model"?: "mistral:7b"
+      }
     """
     def post(self, request):
         s = JudgeRequestSerializer(data=request.data)
         s.is_valid(raise_exception=True)
 
-        gen = get_object_or_404(Generation, id=s.validated_data["generation_id"])
         reference = s.validated_data["reference"]
         judge_model = s.validated_data.get("judge_model") or "mistral:7b"
-        candidate = s.validated_data.get("candidate") or (gen.output or "")
 
+        # Try to get candidate from Generation if generation_id is given
+        candidate = None
+        gen = None
+        gen_id = s.validated_data.get("generation_id")
+
+        if gen_id is not None:
+            try:
+                gen = Generation.objects.get(id=gen_id)
+                candidate = s.validated_data.get("candidate") or (gen.output or "")
+            except Generation.DoesNotExist:
+                # Fallback: only use candidate if provided
+                candidate = s.validated_data.get("candidate")
+
+        else:
+            candidate = s.validated_data.get("candidate")
+
+        if not candidate:
+            return Response(
+                {"error": "missing_candidate", "detail": "No candidate text provided"},
+                status=400,
+            )
+
+        # Run LLM judge
         scores = judge_with_mistral(candidate, reference, judge_model=judge_model)
         if isinstance(scores, dict) and "error" in scores:
             return Response({"error": "judge_failed", "detail": scores}, status=400)
 
-        _persist_judge(
-            generation_id=gen.id,
-            reference=reference,
-            judge_model=judge_model,
-            scores=scores,
-        )
+        # Persist only if we have a valid Generation
+        if gen is not None:
+            _persist_judge(
+                generation_id=gen.id,
+                reference=reference,
+                judge_model=judge_model,
+                scores=scores,
+            )
+
         return Response(scores, status=200)
+
 
 
 @method_decorator(csrf_exempt, name="dispatch")
