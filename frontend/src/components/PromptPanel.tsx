@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function PromptPanel({
-  defaultModel = "mistral:7b",
+  defaultModel = "gemma3-4b-ollama",
   onGenerated,
   onError,
   busy,
@@ -63,7 +63,7 @@ export default function PromptPanel({
               className="form-control ai-input mb-3"
               value={model}
               onChange={(e) => setModel(e.target.value)}
-              placeholder="e.g. mistral:7b"
+              placeholder="e.g. gemma3-4b-ollama"
             />
             <button
               onClick={handleGenerate}

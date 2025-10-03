@@ -145,10 +145,19 @@ body{
 .card-title{color:var(--cyber-primary)!important;text-shadow:0 0 5px currentColor;margin-bottom:0!important}
 @keyframes panelScan{0%{left:-100%}100%{left:100%}}
 
-.btn{
-  font-family:'Courier New','Monaco','Consolas',monospace!important;
-  text-transform:uppercase;letter-spacing:1px;font-weight:bold;border-radius:8px!important;
-  transition:all .3s ease!important;position:relative;overflow:hidden
+.btn {
+  position: relative;
+  overflow: hidden;
+  color: #fff;
+  background: linear-gradient(135deg, #8898b0, #5b637a); /* brighter base */
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.4); /* glow effect */
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 .btn::before{
   content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
@@ -417,12 +426,32 @@ body{
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.05);
   border-radius: 0.5rem;
-  color: #685c5c;
-  transition: background 0.2s ease;
+  color: #e5e7eb; /* brighter text */
+  transition: background 0.2s ease, color 0.2s ease;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+.cyber-input::file-selector-button {
+  background: linear-gradient(135deg, #5f687a, #4c73a2); /* darker tones */
+  color: #d1d5db; /* soft light gray */
+  border: none;
+  border-radius: 0.4rem;
+  padding: 0.5rem 1rem;
+  margin-right: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+
+  /* softer glow */
+  box-shadow: 0 0 8px rgba(116, 133, 150, 0.3);
 }
 
-.cyber-input:hover {
-  background: rgba(255, 255, 255, 0.1);
+.cyber-input::file-selector-button:hover {
+  transform: translateY(-1px);
+  background: linear-gradient(135deg, #517eb2, #6d7b8d); /* slightly brighter on hover */
+  box-shadow: 0 0 16px rgba(115, 162, 203, 0.8); /* stronger glow only on hover */
 }
 
 /* Button row */
@@ -476,7 +505,9 @@ body{
   color: #e2e8f0;
   font-size: 0.9rem;
 }
-
+.text-muted-blue {
+  color: #bbc2ec !important;  /* brighter gray */
+}
 .cyber-table th {
   text-align: left;
   padding: 0.6rem;

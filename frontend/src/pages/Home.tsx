@@ -20,7 +20,7 @@ export default function App() {
   const [reference, setReference] = useState(
     "Autumn leaves descend,\nGolden whispers kiss the ground—\nSeason's gentle end."
   );
-  const [modelSlug, setModelSlug] = useState("mistral:7b");
+  const [modelSlug, setModelSlug] = useState("gemma3-4b-ollama");
 
   // Data
   const [generation, setGeneration] = useState<GenerationResp | null>(null);

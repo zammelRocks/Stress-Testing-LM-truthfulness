@@ -93,19 +93,19 @@ const EvaluateDataSet: React.FC = () => {
                 <div className="card-body">
                   <div className="row g-3">
                     <div className="col-6">
-                      <small className="text-muted d-block">Name</small>
+                      <small className="text-muted-blue d-block">Name</small>
                       <div className="fw-semibold">{currentDataset.name}</div>
                     </div>
                     <div className="col-6">
-                      <small className="text-muted d-block">Rows</small>
+                      <small className="text-muted-blue d-block">Rows</small>
                       <div className="fw-semibold">{currentDataset.row_count}</div>
                     </div>
                     <div className="col-6">
-                      <small className="text-muted d-block">Kind</small>
+                      <small className="text-muted-blue d-block">Kind</small>
                       <div className="fw-semibold text-uppercase">{currentDataset.kind}</div>
                     </div>
                     <div className="col-6">
-                      <small className="text-muted d-block">Uploaded</small>
+                      <small className="text-muted-blue d-block">Uploaded at</small>
                       <div className="fw-semibold">
                         {new Date(currentDataset.uploaded_at).toLocaleString()}
                       </div>
