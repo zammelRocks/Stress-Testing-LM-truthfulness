@@ -63,6 +63,9 @@ INSTALLED_APPS = [
     "corsheaders",
 ]
 
+CORS_ALLOW_ALL_ORIGINS = True
+
+
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
     'django.middleware.security.SecurityMiddleware',
@@ -79,11 +82,15 @@ ROOT_URLCONF = 'thesis.urls'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
+
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
     "http://localhost:3000",
+    "http://127.0.0.1:3000",
 ]
 LOGGING = {
     "version": 1,
