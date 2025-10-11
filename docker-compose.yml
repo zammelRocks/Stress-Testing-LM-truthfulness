@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+  backend:
+    build:
+      context: .         # 👈 build context = project root
+      dockerfile: ./apps/Dockerfile 
+    container_name: django-backend
+    command: gunicorn thesis.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./apps:/app  
+    env_file:
+      - .env
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    container_name: react-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    restart: always
+    environment:
+      POSTGRES_DB: thesis_db
+      POSTGRES_USER: thesis_user
+      POSTGRES_PASSWORD: thesis_pass
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  pgdata:
