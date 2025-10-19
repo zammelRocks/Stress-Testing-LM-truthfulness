@@ -60,6 +60,7 @@ INSTALLED_APPS = [
     "apps.eval",
     "apps.users",
     "apps.datasets",
+    'apps.llm_judge',
     "corsheaders",
 ]
 

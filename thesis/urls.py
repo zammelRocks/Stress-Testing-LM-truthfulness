@@ -28,6 +28,7 @@ urlpatterns = [
     path("api/evaluate/", include("apps.eval.urls")),
     path("api/generate/", RedirectView.as_view(url="/api/inference/generate/", permanent=False)),
     path("api/datasets/", include("apps.datasets.urls")),
+    path("api/judge/", include("apps.llm_judge.urls")),
 ]
 
 if settings.DEBUG:

@@ -2,20 +2,21 @@
 import type { GenerationResp, MetricsResp, JudgeScores, BackendGenerationResp } from "./types";
 import type { DatasetUploadResponse } from "./types"; 
 import type { InferenceModel, LabelDatasetRequest, LabelDatasetRowResult } from "./types";
-
+import type { JudgeSamplingPayload, JudgeSamplingResponse } from "./types";
 
 export const API_BASE =
   (import.meta as any)?.env?.VITE_API_BASE_URL || "http://127.0.0.1:8000";
 
 console.log("API_BASE:", API_BASE);
-
+const BASE_URL = "http://127.0.0.1:8000/api";
 // Updated paths to match Django URL structure
 const PATHS = {
   inference: "/api/inference",
   evaluate: "/api/evaluate",
   generations: "/api/generations", // For listing/retrieving generations
+  judge: `${BASE_URL}/judge`,
+  
 };
-
 const join = (base: string, path: string) =>
   `${API_BASE}${base}${path.startsWith("/") ? path : `/${path}`}`;
 
@@ -450,6 +451,11 @@ export const api = {
       reference,
      metrics: ["bleu", "rouge", "cosine"],
   }),
+
+  evaluateJudgeSampling: async (
+  payload: JudgeSamplingPayload
+  ): Promise<JudgeSamplingResponse> =>
+  post<JudgeSamplingResponse>(`${PATHS.judge}/evaluate/`, payload),
 
   
 
