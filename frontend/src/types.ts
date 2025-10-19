@@ -99,3 +99,35 @@ export interface LabelDatasetRowResult {
 }
 
 
+/** =======================
+ *  Judge Sampling Types
+ *  ======================= */
+
+/** Single token prediction with probability */
+export interface TokenProb {
+  token: string;
+  prob: number;
+}
+
+/** Each evaluation dimension and its top token probabilities */
+export interface DimensionResult {
+  dimension: string;
+  top_tokens: TokenProb[];
+}
+
+/** Response returned from /api/judge/evaluate/ */
+export interface JudgeSamplingResponse {
+  model_name: string;
+  scores: Record<string, any>;
+  dimensions: DimensionResult[];
+}
+
+/** Request body for /api/judge/evaluate/ */
+export interface JudgeSamplingPayload {
+  candidate: string;
+  reference: string;
+  model_name: string;
+  temperature: number;
+  top_p: number;
+  top_k: number;
+}
