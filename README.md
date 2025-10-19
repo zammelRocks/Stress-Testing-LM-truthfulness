@@ -41,10 +41,15 @@ A lightweight, end-to-end stack for generating model outputs, computing classic 
 
 <img width="1223" height="933" alt="image" src="https://github.com/user-attachments/assets/9654e6eb-50ac-44de-8d11-d4c8061d6cc0" />
 
-# Coming Soon :Use LLM-as-a-judge to evaluate ..
+# LLM-as-a-judge : reducing the overlap between Benchmarks and semantics to evaluate Claim vs Reference based on Dimensions for different scale choices depending on their usage
+
+<img width="615" height="386" alt="image" src="https://github.com/user-attachments/assets/f7e3119a-b40c-4eb5-99d3-a1daaf17bede" />
 
 
-# Future Work : Prompt injection evaluation, Jail breaking or Prompt Mining :3 will see
+
+# Ongoing : vLLMs and Sampling, what about triggers and uncertainity ?
+
+# Future Work :Jail break, Prompt Injection, Agentic AI work flow, did you test before you deploy ?
 ---
 
 ## 1) Prerequisites
@@ -318,6 +323,7 @@ curl -X POST http://127.0.0.1:8000/api/evaluate/judge/ \
   -H "Content-Type: application/json" \
   -d '{"generation_id":33,"reference":"Golden leaves and crisp air—keep it 5/7/5.","judge_model":"mistral:7b"}'
 ```
+
 
 
 
