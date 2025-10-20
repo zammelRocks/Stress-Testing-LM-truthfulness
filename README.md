@@ -48,6 +48,8 @@ A lightweight, end-to-end stack for generating model outputs, computing classic 
 
 
 # Ongoing : vLLMs and Sampling, what about triggers and uncertainity ?
+<img width="943" height="875" alt="image" src="https://github.com/user-attachments/assets/eefdbe93-3d8c-45a8-82c0-07928ccfe8c0" />
+
 
 # Future Work :Jail break, Prompt Injection, Agentic AI work flow, did you test before you deploy ?
 ---
@@ -323,6 +325,7 @@ curl -X POST http://127.0.0.1:8000/api/evaluate/judge/ \
   -H "Content-Type: application/json" \
   -d '{"generation_id":33,"reference":"Golden leaves and crisp air—keep it 5/7/5.","judge_model":"mistral:7b"}'
 ```
+
 
 
 
