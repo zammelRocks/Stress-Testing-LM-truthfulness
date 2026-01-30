@@ -1,5 +1,5 @@
 import json
-import re
+import math
 from .prompts import EVALUATION_PROMPT_TEMPLATE
 from .vllm_client import query_vllm_for_completion, get_top_logits_from_vllm
 
@@ -9,68 +9,58 @@ DIMENSIONS = [
     "proficiency",
     "helpfulness",
     "level_of_detail",
-    "creativity"
+    "creativity",
 ]
 
-def parse_llm_json_output(raw_output: str):
-    """
-    Cleans and extracts a valid JSON object from an LLM's text output.
-    Returns parsed JSON if successful, or error details otherwise.
-    """
-    if not raw_output or not isinstance(raw_output, str):
-        return {"error": "Empty or invalid model output", "raw_output": raw_output}
 
-    # Step 1: Strip markdown or code fences (```json ... ```)
-    cleaned = re.sub(r"```(?:json)?|```", "", raw_output, flags=re.IGNORECASE).strip()
-
-    # Step 2: Extract potential JSON portion
-    match = re.search(r"\{.*\}", cleaned, re.DOTALL)
-    if match:
-        cleaned = match.group(0).strip()
-
-    # Step 3: Parse JSON safely
+def safe_parse_json(text):
+    """Try to parse model output into valid JSON."""
     try:
-        parsed = json.loads(cleaned)
-        expected_keys = set(DIMENSIONS + ["overall"])
-        if isinstance(parsed, dict) and expected_keys.issubset(parsed.keys()):
-            return parsed
-        else:
-            return {"error": "Missing expected fields", "raw_output": cleaned}
-    except json.JSONDecodeError:
-        # Try to fix trailing commas and reparse
-        cleaned = re.sub(r",\s*([}\]])", r"\1", cleaned)
-        try:
-            return json.loads(cleaned)
-        except json.JSONDecodeError:
-            return {"error": "Model did not return valid JSON", "raw_output": raw_output}
+        start = text.find("{")
+        end = text.rfind("}") + 1
+        if start != -1 and end != -1:
+            return json.loads(text[start:end])
+    except Exception:
+        pass
+    return {"error": "Model did not return valid JSON", "raw_output": text}
 
 
 def evaluate_with_vllm(model_name, candidate, reference, decoding_params):
-    """
-    Evaluates a candidate vs. reference using vLLM model.
-    Produces structured metric scores + top token probabilities.
-    """
-    # 1️⃣ Build strict evaluation prompt
+    # 1️⃣ Format evaluation prompt
     formatted_prompt = EVALUATION_PROMPT_TEMPLATE.format(
         reference=reference,
-        candidate=candidate
+        candidate=candidate,
     )
 
-    # 2️⃣ Query vLLM for structured output
+    # 2️⃣ Query vLLM for the JSON scores
     response_text = query_vllm_for_completion(model_name, formatted_prompt, decoding_params)
+    scores = safe_parse_json(response_text)
 
-    # 3️⃣ Parse or recover model JSON output
-    scores = parse_llm_json_output(response_text)
-
-    # 4️⃣ Query token-level logits per dimension
+    # 3️⃣ For each dimension, query logits focused on numeric score tokens
     dim_logits = {}
     for dim in DIMENSIONS:
-        dim_prompt = f"Rate {dim} based on the previous evaluation rubric."
+        dim_prompt = f"""
+Given the following context, assign a score from 1 to 5 for **{dim}**.
+REFERENCE: {reference}
+CANDIDATE: {candidate}
+Respond ONLY with a single number from 1 to 5.
+"""
         top_tokens = get_top_logits_from_vllm(model_name, dim_prompt, decoding_params)
-        dim_logits[dim] = top_tokens
 
-    # 5️⃣ Return unified result
-    return {
+        # Filter to numeric tokens and normalize probabilities
+        numeric_tokens = [
+            t for t in top_tokens if t["token"].strip() in ["1", "2", "3", "4", "5"]
+        ]
+        s = sum(t["prob"] for t in numeric_tokens) or 1
+        normalized = [
+            {"token": t["token"].strip(), "prob": round(t["prob"] / s, 3)}
+            for t in numeric_tokens
+        ]
+
+        dim_logits[dim] = normalized
+
+    # 4️⃣ Return structured result
+    result = {
         "model_name": model_name,
         "scores": scores,
         "dimensions": [
@@ -78,3 +68,5 @@ def evaluate_with_vllm(model_name, candidate, reference, decoding_params):
             for dim in DIMENSIONS
         ],
     }
+
+    return result
